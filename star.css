@@ -1,0 +1,24 @@
+body {
+  width: 100%;
+  height: 96vh;
+  background-color: #000;
+  background-image: radial-gradient(circle at top right, rgba(30, 10, 60, 0.5),       transparent),
+    radial-gradient(circle at 20% 80%, rgba(0, 0, 0, 0.13), transparent)
+}
+canvas {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+a {
+  position: absolute;
+  bottom: 2vmin;
+  right: 2vmin;
+  color: rgba(255,255,255,0.2);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #5a4fcf;
+}
