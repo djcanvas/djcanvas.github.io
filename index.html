@@ -1,69 +1,352 @@
 
+<!DOCTYPE html>
 
-<html lang="en">
+<html lang="de"
+      dir="ltr">
+
 <head>
-	<link rel="shortcut icon" href="https://www.vippng.com/png/full/368-3682725_geometric-logo-c-cube-cool-geometric-logo-transparent.png">
+<base target="_self">
+
+<link rel="stylesheet" type="text/css" href="/css/fonts.css">
+<link rel="stylesheet" type="text/css" href="/css/standard.css">
+		
+		
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="expires" content="7 days">
+<meta http-equiv="pragma" content="no-cache">
+<meta name="robots" content="all">
+<meta name="description" content="Wir sind ein Gymnasium mit sprachlichem und naturwissenschaftlichem Profil. Zur Zeit unterrichten ca. 60 Lehrerinnen und Lehrer unsere &uuml;ber 550 Sch&uuml;ler in &uuml;ber 20 F&auml;chern.">
+<meta name="keywords" content="Gymnasium,Abitur,Denzlingen,S&uuml;dschwarzwald,k&uuml;nstlerisch,sprachlich,naturwissenschaft,schule,sch&uuml;ler,freiburg,erasmus,gymnasium,denzlingen,weiterf&uuml;hrende schulen">
+<meta name="abstract" content="Erasmus-Gymnasium Denzlingen">
+<meta name="content-language" content="de">
+<meta name="language" content="deutsch, de, german">
+<meta name="audience" content="all">
+<meta name="page-topic" content="Gymnasium Denzlingen">
+<meta name="page-type" content="Gymnasium Denzlingen">
+
+<title>Erasmus Gymnasium in Denzlingen bei Freiburg</title>
+<script src="/scripts/prototype.js"></script>
+<script src="/scripts/scriptaculous.js?load=effects,builder"></script>
+<script src="/scripts/lightbox.js"></script>
+
+<script>
+
+	function ws_imgslideshow (imgcontainerid, pauseintervall, autorun)  {
+		this.imgs = new Array();
+		this.zInterval = null;
+		this.current=0;
+		this.imgcontainerid = imgcontainerid;
+		this.pintervall = (typeof pauseintervall === 'undefined') ? 4400 : pauseintervall;
+		this.usedtag = 'img';
+		this.usedtagdata = 'data-slider';
+		this.timerid = 0;
+		this.callbackImgChanged = null;
+		this.pautorun = (typeof autorun === 'undefined') ? true : autorun==true;
+		this.progresslock = 0;
+		this.setOptionUsedTag = function (tagname, tagdata)  {
+			eval ('_secslideshowmaster'+imgcontainerid.replace(/[^a-z0-9_]/gi, '')+' = this;');
+			eval ('var ssm = _secslideshowmaster'+imgcontainerid.replace(/[^a-z0-9_]/gi, '')+';');
+			ssm.usedtag = tagname;
+			ssm.usedtagdata = (typeof tagdata === 'undefined') ? 'data-slider' : tagdata;
+		}
+		this.init = function ()  {
+			eval ('_secslideshowmaster'+imgcontainerid.replace(/[^a-z0-9_]/gi, '')+' = this;');
+			eval ('var ssm = _secslideshowmaster'+imgcontainerid.replace(/[^a-z0-9_]/gi, '')+';');
+			if(!document.getElementById || !document.getElementById(ssm.imgcontainerid)) return;
+			if (ssm.usedtag == 'img')  { ssm.imgs = document.getElementById(ssm.imgcontainerid).getElementsByTagName('img');
+			} else if (ssm.usedtag == 'div')  {
+				var tmp = document.getElementById(ssm.imgcontainerid).getElementsByTagName('div');
+				for (var i=0; i<tmp.length; i++)  { if (tmp[i].hasAttribute ('data-slider'))  {ssm.imgs.push (tmp[i]);}}
+			} else { return; }
+			if (ssm.imgs.length < 2)  return;
+			for(var i=1;i<ssm.imgs.length;i++) ssm.imgs[i].xOpacity = 0;
+			ssm.imgs[0].style.display = 'block';
+			ssm.imgs[0].xOpacity = .99;
+			if (ssm.pautorun) {
+				ssm.timerid = setTimeout(function(){ssm.srun('next')}, ssm.pintervall);
+			}
+		}
+		this.srun = function (dir, goto) {
+			eval ('var ssm = _secslideshowmaster'+imgcontainerid.replace(/[^a-z0-9_]/gi, '')+';');
+			if (typeof goto !== 'undefined' && goto==ssm.current) {
+				if (ssm.pautorun) {
+					ssm.timerid = setTimeout(function(){ssm.srun('next')},ssm.pintervall);
+				}
+				return true;
+			}
+			ssm.progresslock = 1;
+			ssm.cOpacity = ssm.imgs[ssm.current].xOpacity;
+			if (dir == 'jump') {
+				ssm.nIndex = ssm.imgs[goto]?goto:0;
+			} else if (dir == 'prev') {
+				ssm.nIndex = ssm.imgs[ssm.current-1]?ssm.current-1:ssm.imgs.length-1;
+			} else {
+				ssm.nIndex = ssm.imgs[ssm.current+1]?ssm.current+1:0;
+			}
+			ssm.nOpacity = ssm.imgs[ssm.nIndex].xOpacity;
+			ssm.cOpacity-=.05;ssm.nOpacity+=.05;
+			ssm.imgs[ssm.nIndex].style.display = 'block';
+			ssm.imgs[ssm.current].xOpacity = ssm.cOpacity;
+			ssm.imgs[ssm.nIndex].xOpacity = ssm.nOpacity;
+			ssm.setOpacity(ssm.imgs[ssm.current]);ssm.setOpacity(ssm.imgs[ssm.nIndex]);
+			if(ssm.cOpacity<=0) {
+				ssm.imgs[ssm.current].style.display = 'none';
+				ssm.current = ssm.nIndex;
+				ssm.progresslock = 0;
+				if (typeof ssm.callbackImgChanged === 'function') {
+					ssm.callbackImgChanged(ssm.current);
+				}
+				if (ssm.pautorun) {
+					ssm.timerid = setTimeout(function(){ssm.srun('next')},ssm.pintervall);
+				}
+			} else {
+				ssm.timerid = setTimeout(function(){ssm.srun(dir, goto)},80);
+			}
+		}
+		this.prevImg = function () {
+			eval ('var ssm = _secslideshowmaster'+imgcontainerid.replace(/[^a-z0-9_]/gi, '')+';');
+			if (ssm.progresslock != 0) { setTimeout(function(){ssm.prevImg()},100);} else {
+				clearTimeout (ssm.timerid);
+				ssm.srun ('prev');
+			}
+		}
+		this.nextImg = function () {
+			eval ('var ssm = _secslideshowmaster'+imgcontainerid.replace(/[^a-z0-9_]/gi, '')+';');
+			if (ssm.progresslock != 0) { setTimeout(function(){ssm.nextImg()},100);} else {
+				clearTimeout (ssm.timerid);
+				ssm.srun ('next');
+			}
+		}
+		this.goToImg = function (no) {
+			eval ('var ssm = _secslideshowmaster'+imgcontainerid.replace(/[^a-z0-9_]/gi, '')+';');
+			if (ssm.progresslock != 0) { setTimeout(function(){ssm.goToImg(no)},100);} else {
+				clearTimeout (ssm.timerid);
+				ssm.srun ('jump', no);
+			}
+		}
+		this.setCallbackAfterImgChange = function (funcname) {
+			if (typeof funcname === 'function') {
+				eval ('var ssm = _secslideshowmaster'+imgcontainerid.replace(/[^a-z0-9_]/gi, '')+';');
+				ssm.callbackImgChanged = funcname;
+			}
+		}
+		this.stopAutorun = function () {
+			eval ('var ssm = _secslideshowmaster'+imgcontainerid.replace(/[^a-z0-9_]/gi, '')+';');
+			clearTimeout (ssm.timerid);
+			ssm.pautorun = false;
+		}
+		this.startAutorun = function () {
+			eval ('var ssm = _secslideshowmaster'+imgcontainerid.replace(/[^a-z0-9_]/gi, '')+';');
+			ssm.pautorun = true;
+			ssm.srun('next');
+		}
+		this.getImgCount = function () {
+			eval ('var ssm = _secslideshowmaster'+imgcontainerid.replace(/[^a-z0-9_]/gi, '')+';');
+			return ssm.imgs.length;
+		}
+		this.setOpacity = function(obj) {
+			if (obj.xOpacity>.99) {obj.xOpacity = .99;return;}
+			obj.style.opacity = obj.xOpacity;
+			obj.style.MozOpacity = obj.xOpacity;
+			obj.style.filter = 'alpha(opacity=' + (obj.xOpacity*100) + ')';
+		}
+	}
+	 function runslides () {
+	  	var myslidemaster = new ws_imgslideshow ('header_pictures');
+		myslidemaster.setOptionUsedTag ('div');
+	  	myslidemaster.init ();
+	}
+	document.observe('dom:loaded', function () { runslides() });
+
+</script></head>
+
+<body>
+
+<div id="mobile_nav">
+<a href="/"><img alt="Startseite" title="Startseite" width="40" height="39" src="/clips/mobile_home.png"></a>
+<a href="/de/kontakt/"><img alt="zum Kontaktformular" title="zum Kontaktformular" width="40" height="39" src="/clips/mobile_contact.png"></a>
+<a href="tel:+497666932250"><img alt="Telefon" title="Telefon" width="40" height="39" src="/clips/mobile_phone.png" ></a>
+<a href="/de/mobile_menu/"><img alt="zum Menü" title="zum Menü" width="40" height="39" src="/clips/mobile_menu.png" id="mobile_m"></a>
+<div class="clear"></div>
+</div>
 
 
+<div id="headmenu_container"><div id="headmenu"><ul><li><a href="/" data-top="1"  class="active" ontouchstart="" style="border: 0px !important;">Unsere Schule</a>
+<ul>
+<li><a href="/eip/pages/schulleitung.php" >
+Schulleitung</a></li><li><a href="/eip/pages/leitbild.php" >
+Leitbild</a></li><li><a href="/eip/pages/beratungslehrerin.php" >
+Beratungslehrerin </a></li><li><a href="/eip/pages/schulportfolio.php" >
+Schulportfolio</a></li><li><a href="/eip/pages/schulsozialarbeit.php" >
+Schulsozialarbeit</a></li><li><a href="/eip/pages/freundes-und-foerderkreis-1.php" >
+Freundes-und F&ouml;rderkreis</a></li><li><a href="/de/kontakt/" >
+Kontakt</a></li></ul>
+</li><li><a href="/eip/pages/unterricht.php" data-top="1"  ontouchstart="">Unterricht</a>
+<ul>
+<li><a href="/eip/pages/profile.php" >
+Profile</a></li><li><a href="/eip/pages/faecher-und-lehrer.php" >
+F&auml;cher und Lehrer</a></li><li><a href="/eip/pages/stundentafel.php" >
+Stundentafel</a></li><li><a href="/eip/pages/oberstufenberatung.php" >
+Oberstufenberatung</a></li></ul>
+</li><li><a href="/eip/pages/schulleben.php" data-top="1"  ontouchstart="">Schulleben</a>
+<ul>
+<li><a href="/eip/pages/austauschprogramme.php" >
+Austauschprogramme </a></li><li><a href="/eip/pages/bogy.php" >
+BOGY </a></li><li><a href="/eip/pages/eine-welt-ag.php" >
+Eine-Welt AG</a></li><li><a href="/eip/pages/chor-und-orchester.php" >
+Musik AG</a></li><li><a href="/eip/pages/presse-ag.php" >
+Presse AG</a></li><li><a href="/eip/pages/sport-ag.php" >
+Sport AG</a></li><li><a href="/eip/pages/theater-ag.php" >
+Theater AG</a></li><li><a href="/eip/pages/sozialcurriculum.php" >
+Sozialcurriculum</a></li></ul>
+</li><li><a href="/eip/pages/wir-fuer-sie.php" data-top="1"  ontouchstart="">Wir f&uuml;r Sie</a>
+<ul>
+<li><a href="/eip/pages/fuer-schueler.php" >
+F&uuml;r Sch&uuml;ler</a></li><li><a href="/eip/pages/fuer-eltern.php" >
+F&uuml;r Eltern</a></li><li><a href="/de/termine/" >
+Termine</a></li><li><a href="/eip/pages/sekretariat.php" >
+Sekretariat</a></li><li><a href="/eip/pages/hausmeister.php" >
+Hausmeister</a></li><li><a href="/eip/pages/schulleitung.php" >
+Schulleitung</a></li></ul>
+</li><li><a href="/eip/pages/internes.php" data-top="1"  ontouchstart="">Internes</a>
+<ul>
+<li><a href="/eip/pages/edupage-1.php" >
+EduPage</a></li><li><a href="/eip/pages/intranet.php" >
+Intranet</a></li></ul>
+</li></ul><div class="clear"></div></div></div>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-
-
-
-<style>
-
-
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-
-header {
-  padding: 0px;
-  text-align: center;
-  color: white;
-
-  }
-  
-
-
-
-
-article {
-
-  text-align: center;
-  padding: 20px;
-	
-  
-}
-	
-
-
-
-
-
-
-</style>
-
-
-<header>
-<font face="Comic sans MS" size="5">
-<h2>Hey</h2>
-</font>
-</header>
-	</head>
-
-	
-  <article>
-  <iframe id="tuerchen" src="https://tuerchen.com/caad27a2?iframe" frameborder="0" width="100%" height="1200"></iframe>
+<div id="header_container">
+<div id="header_pics"><div  id="header_pictures" ><div class="slideshow_pictures" style="background: url('/eip/clips/erasmus-gymnasium-denzlingen-1-4.JPG?fl=36532427') no-repeat center center;-webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;z-index:6;" data-slider="1"></div>
+<div class="slideshow_pictures" style="background: url('/eip/clips/erasmus-gymnasium-denzlingen-1-8.jpg?fl=36532427') no-repeat center center;-webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;display:none;z-index:5;" data-slider="1"></div>
+<div class="slideshow_pictures" style="background: url('/eip/clips/erasmus-gymnasium-denzlingen-1-9.jpg?fl=36532427') no-repeat center center;-webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;display:none;z-index:4;" data-slider="1"></div>
+<div class="slideshow_pictures" style="background: url('/eip/clips/erasmus-gymnasium-denzlingen-1-0.JPG?fl=36532427') no-repeat center center;-webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;display:none;z-index:3;" data-slider="1"></div>
+<div class="slideshow_pictures" style="background: url('/eip/clips/erasmus-gymnasium-denzlingen-1-7.JPG?fl=36532427') no-repeat center center;-webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;display:none;z-index:2;" data-slider="1"></div>
+<div class="slideshow_pictures" style="background: url('/eip/clips/erasmus-gymnasium-denzlingen-1-10.jpg?fl=36532427') no-repeat center center;-webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;display:none;z-index:1;" data-slider="1"></div>
+</div></div>
+<div id="header_contact">
+<div id="header_contact_inner">
+<span class="header_big_blue">Erasmus-Gymnasium</span> &#160;&#160;&#160; <span class="header_big_grey">Denzlingen</span><br>
+<img alt="" title="" width="36" height="26" src="/clips/phone.png"> <a href="tel:+497666932250" class="magictel">07666 - 93 22 50</a>
+<img alt="" title="" width="27" height="18" src="/clips/mail.png"> <script>
+var pref = '&#x6D;&#97;'+'&#105;'+'&#x6C;&#116;&#111;';
+var attribut = '&#x68;'+'&#114;&#101;&#102;'+'=';
+var bla56h = ''+'';
+var attribut = 'hr'+bla56h+'ef'+'=';
+var afb4835ea4 = '&#115;&#101;&#107;&#114;&#x65;&#x74;';
+var a987ba867 = '&#x61;&#114;&#105;&#97;&#x74;&#64;&#101;&#x72;&#x61;&#x73;&#x6D;';
+var a55be6f2c = 'u&#x73;&#45;&#x67;y&#109;&#x6E;&#x61;&#115;&#x69;';
+var adbbd7362 = '&#117;';
+var a20ec479 = '&#x6D;&#x2E;&#x64;&#x65;';
+var a2688ee = '&#115;&#x65;&#x6B;&#x72;&#x65;&#116;&#97;&#114;&#105;&#x61;&#116;&#x40;';
+var a7e1ef2a3 = '&#x65;&#114;';
+var a9e25cc31 = '&#x61;&#x73;&#109;&#117;&#x73;&#x2D;&#103;&#x79;&#x6D;&#x6E;&#97;&#x73;&#x69;&#x75;&#109;&#x2E;&#100;&#x65;';
+var a9959a = '&#x73;&#x65;&#107;&#x72;&#101;&#116;&#97;&#x72;&#x69;&#x61;&#116;&#64;&#x65;&#114;&#97;&#115;&#x6D;&#x75;&#x73;&#45;&#x67;&#121;m&#110;&#97;&#115;&#x69;';
+var a4be331 = '&#117;';
+var a5e64cbea6 = '&#109;';
+var aee0d2 = '&#46;&#100;&#101;';
+document.write( '<a ' + attribut + '\'' + pref + ':' + afb4835ea4+a987ba867+a55be6f2c+adbbd7362+a20ec479+'\'>' );
+document.write( a2688ee+a7e1ef2a3+a9e25cc31+''); 
+document.write( '<\/a>' );
+</script></div><div class="clear"></div>
+</div>
+<div id="header_logo"><a href="/"><img alt="" title="" width="206" height="216" src="/clips/logo.png"></a></div>
+</div><div id="content_container"><div id="content"><h1 class="eip_headline">Willkommen am Erasmus-Gymnasium</h1><div style="margin-top:8px;" class="eip_imgtext_container"><b>GEBILDET - WELTOFFEN - MITMENSCHLICH</b><br><br>Wir sind ein allgemeinbildendes Gymnasium mit sprachlichem, naturwissenschaftlichem und künstlerischem Profil. Zur Zeit unterrichten ca. 60 Lehrerinnen und Lehrer unsere über 500 Schüler in über 20 Fächern.</div><div style="height:15px;overflow:hidden;margin:0;padding:0;clear:both;" ></div><h2 class="eip_headline">Aktuelles auf einen Blick:</h2><div style="height:8px;overflow:hidden;margin:0;padding:0;clear:both;" ></div><div class="boxes"><div class="box" onclick="window.open('https://press-egd.blogspot.com', '_blank');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/tree-ga598b3b6f_1920_288.jpg?fl=1636352424"><div class="box_title">Der Herbst ist da&excl;</div></div><div class="box_content"><div class="box_datum"></div>Auf dem Blog der Presse AG sind schöne Herbstgedichte zu finden, bevor es im Dezember wieder täglich spannend wird.</div></div>
+<iframe id="tuerchen" src="https://tuerchen.com/caad27a2?iframe" frameborder="0" width="100%" height="1200"></iframe>
 <script src="https://tuerchen.com/files/app/dist/iframe.js"></script>
-	  
-	  </article>
+<div class="box" onclick="window.open('https://km-bw.de/site/pbs-bw-km-root/get/documents_E-295882048/KULTUS.Dachmandant/KULTUS/KM-Homepage/Artikelseiten%20KP-KM/1_FAQ_Corona/Schreiben%20MD%20Sts%20ab%20August%202021/2021-10-15%20MD-Schreiben%20-%20%C3%84nderungen%20Corona%20VO%20Schule.pdf', '_blank');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/hand-g36a44d4ce_1920_291.png?fl=1634483517"><div class="box_title">Maskenpflicht nur beim Bewegen im Raum</div></div><div class="box_content"><div class="box_datum"></div>Ab dem kommenden Montag wird eine neue Corona-Verordnung Schule gelten. Die wesentlichste Änderung dürfte Ihnen bereits bekannt sein: Unter bestimmten Voraussetzungen entfällt die Maskenpflicht nun im Klassenzimmer bzw. Betreuungsraum.</div></div>
+<div class="box" onclick="window.open('https://erasmus-gymnasium.edupage.org/login/', '_blank');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/mobile-phone-791644_1920_290.jpg?fl=1633519505"><div class="box_title">Schul-&sol;Klasseninformationen &uuml;ber EduPage</div></div><div class="box_content"><div class="box_datum"></div>Liebe Eltern, ab diesem Schuljahr erfolgt der Versand von Elternbriefen und anderen wichtigen Informationen in elektronischer Form über EduPage. Wir möchten Sie bitten, sich bei EduPage regelmäßig anzumelden, damit Sie im Laufe des Schuljahres alle wichtigen Informationen erhalten. Eltern, die die App nutzen, erhalten automatisch eine Pushnachricht.</div></div>
+<div class="box" onclick="window.open('', '_blank');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/strategy-gf8ee292ab_1920_289.jpg?fl=1633515076"><div class="box_title">Schach-AG startet&excl;</div></div><div class="box_content"><div class="box_datum"><img src="/clips/calendar.png"> 06.10.2021</div>Die Schach-AG startet am Montag, 11.10.2021.<br><br>Uhrzeit: 13 Uhr <br>Raum: 0.085<br>Alle Altersstufen!</div></div>
+<div class="box" onclick="window.open('/eip/pages/co2-ampel.php', '_self');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/microphones-1473422_1280_284.png?fl=1631728768"><div class="box_title">Das EGD im Radio</div></div><div class="box_content"><div class="box_datum"><img src="/clips/calendar.png"> 15.09.2021</div></div></div>
+<div class="box" onclick="window.open('https://de.calameo.com/read/0037438209c43f82e48ed', '_blank');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/co2-messgeraete_278.jpg?fl=1630307010"><div class="box_title">CO2-Messger&auml;te f&uuml;r das EGD</div></div><div class="box_content"><div class="box_datum"></div>Ein besonderes Projekt in besonderen Zeiten: NWT-Schüler bauen Kohlenstoffdioxid-Ampeln. <br><br>V.l.n.r.:<br><br>Bürgermeister Markus Hollemann, Aaron Höldin, Luis Berger, Armin Fleig, Jochen Nowaczyk</div></div>
+<div class="box" onclick="window.open('/eip/media_tiles/freundes-und-foerderkreis-danksagung_266.pdf?fl=1626770058', '_blank');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/logo_266.jpg?fl=1626770058"><div class="box_title">Gemeinsam sind wir st&auml;rker - der FFK</div></div><div class="box_content"><div class="box_datum"></div></div></div>
+<div class="box" onclick="window.open('/eip/media_tiles/pausenzonen-ab130921_283.pdf', '_blank');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/screenshot-2021-09-06-113629_283.jpg?fl=1630921083"><div class="box_title">Pausenzonen</div></div><div class="box_content"><div class="box_datum"></div></div></div>
+<div class="box" onclick="window.open('https://km-bw.de/,Lde/startseite/sonderseiten/faq-corona', '_blank');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/seek-1756278_1280_281.jpg?fl=1630918050"><div class="box_title">Corona&colon; H&auml;ufige Fragen und Antworten</div></div><div class="box_content"><div class="box_datum"></div>Auf dieser Seite finden Sie eine Auflistung der häufigsten Fragen und Antworten, die sich für den Schulbetrieb aufgrund der Corona-Pandemie ergeben.</div></div>
+<div class="box" onclick="window.open('/eip/pages/schuljahresplaner-bilder.php', '_self');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/alexia-helmes-7a_269.jpg?fl=1626174617"><div class="box_title">Schuljahresplaner</div></div><div class="box_content"><div class="box_datum"></div>Das Cover für den Schuljahresplaner 2021/22 kommt in diesem Jahr von Alexia Helmes (7a). Weitere sehr schöne Kunstwerke werden im Schuljahresplaner veröffentlicht.</div></div>
+<div class="box" onclick="window.open('https://www.youtube.com/channel/UCst1hCt94Zoqq7vVSKbo03Q', '_blank');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/pexels-obregonia-d-toretto-918281_267.jpg?fl=1626770053"><div class="box_title">Wenn eine&sol;r eine Reise tut</div></div><div class="box_content"><div class="box_datum"></div>Für ein Kunst-Fernlernprojekt haben die Klassen 8a und 8b das Thema Reise als Stop Motion Film umgesetzt. <br>Über diesen Link findet ihr ein paar Beispiele. Viel Spaß!</div></div>
+<div class="clear"></div></div><div style="text-align:center;"><div class="eip_trennlinie">&#160;</div></div><h2 class="eip_headline">Lernplattform EduPage</h2><div class="boxes"><div class="box" onclick="window.open('/eip/pages/edupage.php', '_self');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/bildschirmfoto-2020-08-14-um-175121_206.png?fl=1604473774"><div class="box_title">EduPage</div></div><div class="box_content"><div class="box_datum"></div>Das Erasmus-Gymnasium hat zum Schuljahr 2020/21 die Schulsoftware EduPage eingeführt. EduPage bietet eine Fu&#776;lle an Komponenten, die den Schulalltag fu&#776;r alle Beteiligte, insbesondere wa&#776;hrend Fernlernphasen, deutlich erleichtert.</div></div>
+<div class="box" onclick="window.open('/eip/media_tiles/anleitung-vk_jitsi_edupage_teilnehmer_egd_angepasst_08012021_223.pdf?fl=1626769659', '_blank');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/education-5600987_1920_223.png?fl=1626769659"><div class="box_title">Kurzanleitung - Videokonferenzen</div></div><div class="box_content"><div class="box_datum"></div></div></div>
+<div class="clear"></div></div><div style="text-align:center;"><div class="eip_trennlinie">&#160;</div></div><div class="boxes"><div class="box" onclick="window.open('/eip/pages/ankommen.php', '_self');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/fragen_61.jpg?fl=1592304999"><div class="box_title">Sie haben Fragen&quest; Wir die Antworten&period;</div></div><div class="box_content"><div class="box_datum"><img src="/clips/calendar.png"> 16.06.2020</div>Ihr Kind und Sie stehen vor der Entscheidung der Schulwahl?<br>Wir beantworten gerne die häufigsten Fragen zu den wichtigsten Bereichen:<br>Unterricht und Angebote, Organisation, Betreuung, Ankommen.</div></div>
+<div class="box" onclick="window.open('/de/kontakt/index.php', '_self');"><div class="box_img"><img alt="" title="" style="width:100%;height:auto;" src="/eip/clips_tiles/erasmus-gymnasium-_38_1_small_62.jpg?fl=1583492932"><div class="box_title">Kontakt</div></div><div class="box_content"><div class="box_datum"></div></div></div>
+<div class="clear"></div></div><div style="height:10px;overflow:hidden;margin:0;padding:0;clear:both;" ></div><div style="text-align:center;"><div class="eip_trennlinie">&#160;</div></div></div>
+<div id="termine">
+<div id="termine_head">
+<img alt="" title="" width="100%" src="/clips/termin-head.png">
+<div id="termine_head_title">Termine</div>
+</div>
 
-	
+<div class="termin_list" onclick="window.open('/de/termine/#a377', '_self');">
+Mi, 24.11.2021<br>20:00 bis 21:30 Uhr<br>Freundes- und Förderkreis - Mitgliederversammlung<div class="termin_list_tocal"><a href="/de/termine/createvcs.php?id=377" class="termin_link">in den Kalender <img alt="" title="" width="30" height="22" src="/clips/to-icalendar.gif" align="absmiddle"></a></div></div>
 
-</body>
+</div>
+<div class="clear"></div>
+</div><div id="footer_container">
+<div id="footer_col1">
+<div id="footer_big">Erasmus-Gymnasium</div>
+Stuttgarter Straße 15<br>
+79211 Denzlingen<br><br>
+
+Tel.: <a href="tel:+497666932250" class="magictel">07666 - 93 22 50</a><br>
+Fax: 07666 - 93 22 60<br>
+E-Mail: <script>
+var pref = '&#x6D;&#97;'+'&#x69;'+'&#108;&#116;&#111;';
+var attribut = '&#x68;&#x72;'+'&#x65;&#102;'+'=';
+var bla56h = ''+'';
+var attribut = 'hr'+bla56h+'ef'+'=';
+var ad6c = '&#x73;&#x65;&#x6B;&#x72;&#101;&#x74;&#97;&#114;&#x69;&#x61;&#116;&#64;&#101;&#114;&#x61;&#115;&#x6D;&#x75;&#115;&#x2D;&#103;&#x79;';
+var aba3fbf1 = '&#x6D;n&#x61;&#115;&#105;&#x75;';
+var adbcb539578 = '&#x6D;';
+var aa95 = '&#x2E;&#100;e';
+var a130fb745 = '&#x73;';
+var a173 = '&#101;&#107;&#114;&#x65;t&#97;&#114;&#x69;';
+var a218df = '&#97;&#x74;&#x40;';
+var ab9a42c0275 = '&#101;&#x72;&#x61;&#115;&#109;u&#x73;-&#103;&#x79;&#x6D;&#110;&#97;&#x73;';
+var a63d = '&#x69;&#x75;m&#x2E;&#x64;&#x65;';
+var a7c0 = '&#115;&#101;&#107;&#114;&#101;';
+var adff308b7 = '&#116;&#x61;&#x72;&#105;&#x61;&#116;&#64;&#x65;r&#x61;&#x73;&#109;&#x75;&#115;&#x2D;&#x67;&#x79;&#x6D;&#110;&#97;';
+var aac9 = '&#x73;&#105;&#x75;&#109;&#46;d&#x65;';
+document.write( '<a ' + attribut + '\'' + pref + ':' + ad6c+aba3fbf1+adbcb539578+aa95+'\'>' );
+document.write( a130fb745+a173+a218df+ab9a42c0275+a63d+''); 
+document.write( '<\/a>' );
+</script><br>
+Zum <a href="/de/kontakt/">Kontaktformular</a>
+
+</div>
+<div id="footer_col2">
+<div class="footer_headline">Sicherer Schulweg</div>
+<br>
+<a href="/media/schulweghauptstrasse.pdf" target="_blank">Schulweg Hauptstraße</a><br>
+<a href="/media/schulwegbrueckleacker.pdf" target="_blank">Schulweg Brückleacker</a>
+
+</div>
+<div id="footer_col3">
+<div class="footer_headline">Schnellzugriff</div><br>
+<a href="/media/raumplan.pdf" target="_blank">Raumplan</a><br>
+<a href="/media/ferienplan_2021-2022.pdf"  target="_blank">Ferienplan</a><br>
+<a href="/eip/pages/vertretungsplan.php">Vertretungsplan</a>
+</div>
+</div>
+
+<div id="imprint_container">
+<div id="imprint"><a href="/de/impressum/#datenschutz">Datenschutz</a> | <a href="/de/impressum/">Impressum</a></div>
+</div>
+
+
+<script>
+
+function getScrollTop() {
+	if(typeof pageYOffset!=='undefined'){return pageYOffset;} else { if (document && document.body && document.documentElement) { var B= document.body;var D= document.documentElement;D=(D.clientHeight)?D:B;return D.scrollTop; } return 0; }
+}
+
+window.onscroll = function() {
+ var scrollTop = getScrollTop();
+ if (scrollTop > 10) {
+  document.getElementById('headmenu_container').style.position = 'fixed';
+  document.getElementById('headmenu_container').style.top = '0px';
+ } else {
+  document.getElementById('headmenu_container').style.position = 'absolute';
+  document.getElementById('headmenu_container').style.top = '10px';
+ }
+};
+
+</script></body>
 </html>
-
