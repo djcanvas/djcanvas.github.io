@@ -1,8 +1,20 @@
 <html>
 <style>
 
+.entire{
+        zoom: 2;
+        -moz-transform: scale(2);/* Firefox Property */
+        -moz-transform-origin: 0 0;
+        -o-transform: scale(2);/* Opera Property */
+        -o-transform-origin: 0 0;
+        -webkit-transform: scale(2);/* Safari Property */
+        -webkit-transform-origin: 0 0;
+        transform: scale(2); /* Standard Property */
+        transform-origin: 0 0;  /* Standard Property */
+    }
+
 body {
-  transform: scale(1.5); transform-origin: 0 0;
+
 background-color: rgba(32, 32, 32, 1);
 font-family: 'Roboto', sans-serif;
 margin-top: 21%;
@@ -68,7 +80,7 @@ alert ("Die Lösung(en) ist/sind " + (LoesungPos != LoesungPos ? LoesungNeg : Lo
 
 }
 </script>
-<body>
+<body class="entire">
 
 <p> Lösung für die Formel ax<sup>2</sup>+bx+c mit:  </p>
 <div class="formular">
