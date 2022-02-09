@@ -63,11 +63,11 @@ var c = document.getElementById ("c").value;
 
 var LoesungPos = (-b + Math.sqrt(b * b - 4 * a *c)) / (2 * a);
 var LoesungNeg = (-b - Math.sqrt(b * b - 4 * a *c)) / (2 * a);
-if (LoesungNeg == Nan) {
+if (isNan(LoesungNeg)) {
   LoesungNeg == "keine Loesung"
 
 }
-if (LoesungPos == Nan) {
+if (isNan(LoesungPos)) {
   LoesungPos == "keine Loesung"
 
 }
