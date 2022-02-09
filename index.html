@@ -53,12 +53,18 @@ padding-left: 3px
     position: relative;
 
   }
-  input{
-
-    position: absolute;
-    font-size: 25px;
-
-  }
+.f {
+  font-size: 25px;
+  position: relative;
+}
+.g{
+  font-size: 25px;
+  position: relative;
+}
+.h{
+  font-size: 25px;
+  position: relative;
+}
   button{
     position: absolute;
     position: absolute;
@@ -102,14 +108,19 @@ alert ("Die Lösung(en) ist/sind " + (LoesungPos != LoesungPos ? LoesungNeg : Lo
 <body>
 
 <p> Lösung für die Formel ax<sup>2</sup>+bx+c mit:  </p>
-<div id="a" class="formular">
-
- <label for="a">a: </label>
+<div class="formular">
+  <div id="f">
+    <label for="a">a: </label>
  <input type="text"  size="1" id="a">
+</div>
+<div id="g">
   <label for="b">b: </label>
  <input type="text"  size="1" id="b">
+</div>
+<div id="h">
   <label for="c">c: </label>
  <input type="text"  size="1" id="c">
+</div>
  <button type="button" onclick="los()"> Lösen </button>
 
 </div>
