@@ -63,7 +63,7 @@ var c = document.getElementById ("c").value;
 
 var LoesungPos = (-b + Math.sqrt(b * b - 4 * a *c)) / (2 * a);
 var LoesungNeg = (-b - Math.sqrt(b * b - 4 * a *c)) / (2 * a);
-if (isNan(LoesungNeg) || isNan(LoesungPos))  {
+if (isNan((LoesungNeg))) || (isNan(LoesungPos))  {
   alert ("Keine Lösung")
 }
 else {
