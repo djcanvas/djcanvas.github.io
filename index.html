@@ -63,12 +63,15 @@ var c = document.getElementById ("c").value;
 
 var LoesungPos = (-b + Math.sqrt(b * b - 4 * a *c)) / (2 * a);
 var LoesungNeg = (-b - Math.sqrt(b * b - 4 * a *c)) / (2 * a);
-
+if (isNan(LoesungNeg) && isNan(LoesungPos))  {
+  alert ("Keine Lösung")
+}
+else {
 
 
 alert ("Die Lösung(en) ist/sind " + (LoesungPos != LoesungPos ? LoesungNeg : LoesungPos) + " " + (LoesungPos != LoesungPos ? "" : "und") + " " + (LoesungNeg != LoesungNeg ? "" : LoesungNeg));
 
-
+}
 
 }
 </script>
