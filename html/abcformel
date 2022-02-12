@@ -1,0 +1,92 @@
+<html>
+
+<style>
+
+
+
+body {
+background-color: rgba(32, 32, 32, 1);
+
+font-family: 'Roboto', sans-serif;
+margin-top: 21%;
+text-align: center;
+border: 4px solid #ffffff;
+color: #ffffff;
+border-radius: 40px;
+padding: 10px;
+padding-bottom:  5px;
+margin-bottom: 25%;
+margin-right: 38%;
+margin-left: 38%;
+font-size: 15px;
+
+}
+input {
+  font-size: 15px;
+  text-align: center;
+  border: 4px #ffffff;
+  border-radius: 40px;
+
+}
+button{
+  border: 2px solid #ffffff;
+  border-radius: 40px;
+  font-size: 15px;
+  background-color: rgba(32, 32, 32, 1);
+  color: white;
+}
+button:hover{
+  border: 2px solid #ffffff;
+  border-radius: 40px;
+  font-size: 15px;
+  color: rgba(32, 32, 32, 1);
+  background-color: white;
+}
+
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+
+ </style>
+<head>
+ <link rel="icon" type="image.png" href="https://www.iconsdb.com/icons/preview/white/calculator-2-xxl.png">
+
+<title> A-B-C Formelrechner </title>
+
+
+</head>
+
+<script>
+function los() {
+var a = document.getElementById ("a").value;
+var b = document.getElementById ("b").value;
+var c = document.getElementById ("c").value;
+
+var LoesungPos = (-b + Math.sqrt(b * b - 4 * a *c)) / (2 * a);
+var LoesungNeg = (-b - Math.sqrt(b * b - 4 * a *c)) / (2 * a);
+
+
+
+alert ("Die Lösung(en) ist/sind " + (LoesungPos != LoesungPos ? LoesungNeg : LoesungPos) + " " + (LoesungPos != LoesungPos ? "" : "und") + " " + (LoesungNeg != LoesungNeg ? "" : LoesungNeg));
+
+
+
+}
+</script>
+<body class="entire">
+  <script src="/star.js"></script>
+
+<p> Lösung für die Formel ax<sup>2</sup>+bx+c mit:  </p>
+<div class="formular">
+
+ <label for="a">a: </label>
+ <input type="text"  size="1" id="a">
+  <label for="b">b: </label>
+ <input type="text"  size="1" id="b">
+  <label for="c">c: </label>
+ <input type="text"  size="1" id="c">
+ <button type="button" onclick="los()"> Lösen </button>
+
+</div>
+<p>
+</body>
+</html>
