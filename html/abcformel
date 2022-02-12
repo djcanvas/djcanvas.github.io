@@ -87,6 +87,6 @@ alert ("Die Lösung(en) ist/sind " + (LoesungPos != LoesungPos ? LoesungNeg : Lo
  <button type="button" onclick="los()"> Lösen </button>
 
 </div>
-<p>
+<a href="#abcformel.html">752</a>
 </body>
 </html>
