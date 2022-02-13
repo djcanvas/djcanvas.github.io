@@ -55,7 +55,7 @@ button:hover{
 <head>
  <link rel="icon" type="image.png" href="https://www.iconsdb.com/icons/preview/white/calculator-2-xxl.png">
 
-<title> PQS Formelrechner </title>
+<title> PQ Formelrechner </title>
 
 
 </head>
@@ -67,8 +67,8 @@ var b = document.getElementById ("b").value;
 
 d = a * a / 4 - b;
 if (d >= 0) {
-  LoesungNeg=(a/2)-Math.sqrt(d);
-  LoesungPos=a/2+Math.sqrt(d);
+  LoesungPos=(a/2)+Math.sqrt(d);
+  LoesungNeg=a/2-Math.sqrt(d);
   alert ("Die Lösung(en) ist/sind " + (LoesungPos != LoesungPos ? LoesungNeg : LoesungPos) + " " + (LoesungPos != LoesungPos ? "" : "und") + " " + (LoesungNeg != LoesungNeg ? "" : LoesungNeg));
 
 }
