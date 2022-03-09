@@ -1,2 +1,0 @@
-# djcanvas.github.io
-hurensohn
