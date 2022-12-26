@@ -28,7 +28,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 100vh;
+        height: calc(100vh - 100px);
       }
 
       .container {
@@ -56,26 +56,7 @@
         position: relative;
         margin: 0 10px;
         transition: all 0.3s ease;
-      }
-
-      .menu__item::before,
-      .menu__item::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background-color: #333;
-        transform: translateY(-50%);
-      }
-
-      .menu__item::before {
-        transform: translateY(-60%);
-      }
-
-      .menu__item::after {
-        transform: translateY(-40%);
+        border-radius: 50%;
       }
 
       .menu__item:hover {
@@ -91,11 +72,11 @@
         cursor: pointer;
         display: block;
         margin: 20px auto;
+        border-radius: 50%;
       }
 
       .btn:hover {
-        background-color: #555;
-      }
+        background-color: #555; }
 
       /* Add some transitions to the button */
       .btn {
