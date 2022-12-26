@@ -25,6 +25,10 @@
 
       main {
         padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
       }
 
       .container {
@@ -51,7 +55,6 @@
       .menu__item {
         position: relative;
         margin: 0 10px;
-        transform: rotate(45deg);
         transition: all 0.3s ease;
       }
 
@@ -76,12 +79,7 @@
       }
 
       .menu__item:hover {
-        transform: rotate(0);
-      }
-
-      .menu__item:hover::before,
-      .menu__item:hover::after {
-        width: 50%;
+        transform: scale(1.1);
       }
 
       .btn {
@@ -100,7 +98,8 @@
       }
 
       /* Add some transitions to the button */
-      .btn {transition: all 0.3s ease;
+      .btn {
+        transition: all 0.3s ease;
       }
 
       .btn:hover {
