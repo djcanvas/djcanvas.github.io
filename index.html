@@ -1,85 +1,73 @@
 <!DOCTYPE html>
 <html>
-  <style>
-  nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1;
-  }
-
-  nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  nav li {
-    display: inline-block;
-  }
-
-  nav a {
-    display: block;
-    padding: 10px 20px;
-    color: white;
-    text-decoration: none;
-  }
-
-  /* Add some styling to the navbar */
-  nav {
-    background-color: black;
-  }
-
-  /* Add a parallax effect to the navbar */
-  nav.parallax {
-    background-position: 50% 0;
-    background-attachment: fixed;
-    background-size: cover;
-  }
-</style>
-
-<nav class="parallax">
-  <ul>
-    <li><a href="#">Dino</a></li>
-    <li><a href="#">ABC-Formel</a></li>
-    <li><a href="#">pq-Formel</a></li>
-  </ul>
-</nav>
-
-<script>
-  // Get the navbar element
-  var navbar = document.querySelector("nav.parallax");
-
-  // Add a scroll event listener to the navbar
-  window.addEventListener("scroll", function() {
-    // Calculate the scroll position as a percentage of the window height
-    var scrollPos = window.scrollY / window.innerHeight;
-
-    // Update the background position of the navbar
-    navbar.style.backgroundPosition = "50% " + (scrollPos * 100) + "%";
-  });
-</script>
 <head>
   <title>My Website</title>
+  <style>
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1;
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav li {
+      display: inline-block;
+    }
+
+    nav a {
+      display: block;
+      padding: 10px 20px;
+      color: white;
+      text-decoration: none;
+    }
+
+    /* Add some styling to the navbar */
+    nav {
+      background-color: black;
+    }
+
+    /* Add a parallax effect to the navbar */
+    nav.parallax {
+      background-position: 50% 0;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Welcome to My Website</h1>
-  </header>
-<nav>
-  <ul>
-    <li><a href="#">Dino</a></li>
-    <li><a href="#">ABC-Formel</a></li>
-    <li><a href="#">pq-Formel</a></li>
-  </ul>
-</nav>
+  <nav class="parallax">
+    <ul>
+      <li><a href="#">Dino</a></li>
+      <li><a href="#">ABC-Formel</a></li>
+      <li><a href="#">pq-Formel</a></li>
+    </ul>
+  </nav>
   <main>
-    <h2>About My Website</h2>
+    <h1>Welcome to My Website</h1>
     <p>This is my website, where I share information about my interests and hobbies.</p>
   </main>
   <footer>
     <p>Copyright 2021 My Website</p>
   </footer>
+  <script>
+    // Get the navbar element
+    var navbar = document.querySelector("nav.parallax");
+
+    // Add a scroll event listener to the navbar
+    window.addEventListener("scroll", function() {
+      // Calculate the scroll position as a percentage of the window height
+      var scrollPos = window.scrollY / window.innerHeight;
+
+      // Update the background position of the navbar
+      navbar.style.backgroundPosition = "50% " + (scrollPos * 100) + "%";
+    });
+  </script>
 </body>
 </html>
