@@ -10,10 +10,12 @@
         font-family: 'Roboto', sans-serif;
         margin: 0;
         padding: 0;
+        background: url(https://source.unsplash.com/random/1600x900) no-repeat center center fixed;
+        background-size: cover;
       }
 
       header {
-        background-color: #333;
+        background-color: rgba(0, 0, 0, 0.5);
         color: white;
         padding: 20px;
         text-align: center;
@@ -50,21 +52,20 @@
 
       .menu a:hover {
         color: #555;
-      }
-
-      .menu__item {
+      }  .menu__item {
         position: relative;
         margin: 0 10px;
         transition: all 0.3s ease;
-        border-radius: 50%;
+        border-radius: 5%;
+        transform: translateY(0);
       }
 
       .menu__item:hover {
-        transform: scale(1.1);
+        transform: translateY(-5px);
       }
 
       .btn {
-        background-color: #333;
+        background-color: rgba(0, 0, 0, 0.5);
         border: none;
         color: white;
         padding: 10px 20px;
@@ -72,11 +73,12 @@
         cursor: pointer;
         display: block;
         margin: 20px auto;
-        border-radius: 50%;
+        border-radius: 10%;
       }
 
       .btn:hover {
-        background-color: #555; }
+        background-color: rgba(0, 0, 0, 0.7);
+      }
 
       /* Add some transitions to the button */
       .btn {
