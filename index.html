@@ -1,80 +1,85 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+  <style>
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+  }
 
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
 
+  nav li {
+    display: inline-block;
+  }
 
-body {
-  overflow: hidden;
-  min-height: 100vh;
-  min-width: 100vh;
-  font-family: 'Roboto', sans-serif;
-  font-size: 26px;
-  text-align: center;
-  background-image: url("/html/PixelPro+Animated+Background+5.mp4");
+  nav a {
+    display: block;
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+  }
 
-  //background-image: url("https://i.imgur.com/18xiBjk.png");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-color: rgba(2, 2, 2, 1);
+  /* Add some styling to the navbar */
+  nav {
+    background-color: black;
+  }
 
-}
-
-
-div {
-  left: 28%;
-  top: 50%;
-  width: 800px;
-  height: 200px;
-  margin-left: -10px;
-  /* -1/2 width */
-  margin-top: -10px;
-  /* -1/2 height */
-  position: absolute;
-  text-align: center;
-  font-weight: 600;
-
-}
-a{
-  color: rgba(240, 240, 240, 0.8);
-
-  margin-right: 10px;
-  margin-left: 10px;
-  margin-top: 20px;
-  text-decoration: none;
-}
-a:hover{
-  color:#4b7986  ;
-  text-decoration: none;
-}
-
-
-
-
-
+  /* Add a parallax effect to the navbar */
+  nav.parallax {
+    background-position: 50% 0;
+    background-attachment: fixed;
+    background-size: cover;
+  }
 </style>
+
+<nav class="parallax">
+  <ul>
+    <li><a href="#">Dino</a></li>
+    <li><a href="#">ABC-Formel</a></li>
+    <li><a href="#">pq-Formel</a></li>
+  </ul>
+</nav>
+
+<script>
+  // Get the navbar element
+  var navbar = document.querySelector("nav.parallax");
+
+  // Add a scroll event listener to the navbar
+  window.addEventListener("scroll", function() {
+    // Calculate the scroll position as a percentage of the window height
+    var scrollPos = window.scrollY / window.innerHeight;
+
+    // Update the background position of the navbar
+    navbar.style.backgroundPosition = "50% " + (scrollPos * 100) + "%";
+  });
+</script>
+<head>
+  <title>My Website</title>
 </head>
-
-
-
 <body>
-
-  <div>
-    <a style="text-decoration: none;"  href="/html/abcformel.html">ABC-Formel</a>
-    <a style="text-decoration: none;" href="/html/pqformel.html">PQ-Formel</a>
-    <a style="text-decoration: none;" href="/html/video.html">Video</a>
-    <a style="text-decoration: none;" href="/dino/index.html">Dino</a>
-  </div>
-
-
-
-
-
-
-
-
+  <header>
+    <h1>Welcome to My Website</h1>
+  </header>
+<nav>
+  <ul>
+    <li><a href="#">Dino</a></li>
+    <li><a href="#">ABC-Formel</a></li>
+    <li><a href="#">pq-Formel</a></li>
+  </ul>
+</nav>
+  <main>
+    <h2>About My Website</h2>
+    <p>This is my website, where I share information about my interests and hobbies.</p>
+  </main>
+  <footer>
+    <p>Copyright 2021 My Website</p>
+  </footer>
 </body>
 </html>
