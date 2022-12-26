@@ -34,7 +34,7 @@
 
       .menu {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
       }
 
@@ -50,6 +50,9 @@
 
       .menu__item {
         position: relative;
+        margin: 0 10px;
+        transform: rotate(45deg);
+        transition: all 0.3s ease;
       }
 
       .menu__item::before,
@@ -62,7 +65,6 @@
         height: 2px;
         background-color: #333;
         transform: translateY(-50%);
-        transition: all 0.3s ease;
       }
 
       .menu__item::before {
@@ -71,6 +73,10 @@
 
       .menu__item::after {
         transform: translateY(-40%);
+      }
+
+      .menu__item:hover {
+        transform: rotate(0);
       }
 
       .menu__item:hover::before,
@@ -94,8 +100,7 @@
       }
 
       /* Add some transitions to the button */
-      .btn {
-        transition: all 0.3s ease;
+      .btn {transition: all 0.3s ease;
       }
 
       .btn:hover {
