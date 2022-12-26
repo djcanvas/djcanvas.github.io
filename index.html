@@ -30,6 +30,22 @@
         margin: 0 auto;
       }
 
+      .menu {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .menu a {
+        color: #333;
+        text-decoration: none;
+        font-size: 16px;
+      }
+
+      .menu a:hover {
+        color: #555;
+      }
+
       .btn {
         background-color: #333;
         border: none;
@@ -61,13 +77,11 @@
 </header>
 <main>
   <div class="container">
-    <h2>About Me</h2>
-    <p>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-      eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-      enim ad minim veniam, quis nostrud exercitation ullamco laboris
-      nisi ut aliquip ex ea commodo consequat.
-    </p>
+    <nav class="menu">
+      <a href="#">Menu 1</a>
+      <a href="#">Menu 2</a>
+      <a href="#">Menu 3</a>
+    </nav>
     <button class="btn" onclick="showAlert()">Click me!</button>
   </div>
 </main>
@@ -77,5 +91,4 @@
       }
     </script>
 </body>
-
 </html>
