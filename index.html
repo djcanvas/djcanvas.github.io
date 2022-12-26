@@ -85,6 +85,8 @@
         padding: 10px 20px;
         font-size: 16px;
         cursor: pointer;
+        display: block;
+        margin: 20px auto;
       }
 
       .btn:hover {
@@ -120,12 +122,13 @@
         <a href="#">Menu 3</a>
       </div>
     </nav>
-    <button class="btn" onclick="showAlert()">Click me!</button>
+    <button class="btn" onclick="openYouTubeVideo()">Click me!</button>
   </div>
 </main>
 <script>
-      function showAlert() {
-        alert("Hello! You clicked the button.");
+      function openYouTubeVideo() {
+        // Open the "Never Gonna Give You Up" video on YouTube in a new tab
+        window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
       }
     </script>
 </body>
