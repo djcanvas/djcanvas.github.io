@@ -12,7 +12,6 @@
         padding: 0;
         background: url(http://i.imgur.com/kziAoNv.gif) no-repeat center center fixed;
         background-size: cover;
-        filter: blur(1%) brightness(97%);
       }
 
       header {
@@ -27,6 +26,7 @@
       }
 
       main {
+        padding: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -46,7 +46,7 @@
       .menu a {
         color: #333;
         text-decoration: none;
-        font-size: 20px;
+        font-size: 16px;
       }
 
       .menu a:hover {
@@ -62,8 +62,6 @@
       }
 
       .menu__item:hover {
-        transform
-{
         transform: translateY(-5px);
       }
 
@@ -71,8 +69,8 @@
         background-color: rgba(0, 0, 0, 0.5);
         border: none;
         color: white;
-        padding: 20px 40px;
-        font-size: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
         cursor: pointer;
         display: block;
         margin: 20px auto;
@@ -83,7 +81,8 @@
         background-color: rgba(0, 0, 0, 0.7);
       }
 
-      /* Add some transitions to the button */
+      /* Add some transitions to
+/* Add some transitions to the button */
       .btn {
         transition: all 0.3s ease;
       }
@@ -114,20 +113,20 @@
   <a class="logo" href="https://djcanvas.github.io/" target="_blank"></a>
 </header>
 <main>
-  < class="container">
-    <a class="menu">
+  <div class="container">
+    <nav class="menu">
       <div class="menu__item">
-        <a href="#"> Menu 1 </a>
+        <a href="#">Menu 1</a>
       </div>
       <div class="menu__item">
         <a href="#">Menu 2</a>
       </div>
       <div class="menu__item">
-             <a href="#"> Menu 3</a>
+        <a href="#">Menu 3</a>
+      </div>
+    </nav>
+    <button class="btn" onclick="openYouTubeVideo()">Click me!</button>
   </div>
-    </a>
-  <button class="btn" onclick="openYouTubeVideo()">Click me!</button>
-
 </main>
 <script>
       function openYouTubeVideo() {
