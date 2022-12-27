@@ -10,7 +10,7 @@
         font-family: 'Roboto', sans-serif;
         margin: 0;
         padding: 0;
-        background: url(https://media.giphy.com/media/13Nc3YBjbTcKeM/giphy.gif) no-repeat center center fixed;
+        background: url(http://i.imgur.com/kziAoNv.gif) no-repeat center center fixed;
         background-size: cover;
       }
 
@@ -30,7 +30,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: calc(100vh - 100px);
       }
 
       .container {
@@ -53,8 +52,7 @@
       .menu a:hover {
         color: #555;
       }
-
-      .menu__item {
+.menu__item {
         position: relative;
         margin: 0 10px;
         transition: all 0.3s ease;
@@ -72,7 +70,8 @@
         color: white;
         padding: 10px 20px;
         font-size: 16px;
-        cursor: pointer;display: block;
+        cursor: pointer;
+        display: block;
         margin: 20px auto;
         border-radius: 10%;
       }
@@ -89,13 +88,26 @@
       .btn:hover {
         transform: scale(1.1);
       }
+
+      /* Add a logo in the top left corner */
+      .logo {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 50px;
+        height: 50px;
+        background: url(https://i1.sndcdn.com/avatars-jlY9CG0yBja9dsG3-6KpZug-t500x500.jpg) no-repeat center center;
+        background-size: cover;
+        border-radius: 50%;
+        cursor: pointer;
+      }
     </style>
-</head>
 <body>
 <header>
   <div class="container">
     <h1>Welcome to My Website</h1>
   </div>
+  <a class="logo" href="https://djcanvas.github.io/" target="_blank"></a>
 </header>
 <main>
   <div class="container">
