@@ -31,12 +31,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        top: calc(50% - 100px);
       }
 
       .container {
         max-width: 800px;
         margin: 0 auto;
+        top: calc(50% - 100px);
       }
 
       .menu {
@@ -68,8 +68,30 @@
       }
 
       .btn {
-        background-color: rgba
-height: 50px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        display: block;
+        margin: 20px auto;
+        border-radius: 10%;
+      }
+
+      .btn:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+      }
+
+      /* Add some transitions to the button */
+      .btn {
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover {
+        transform: scale(1.1);
+
+      height: 50px;
           background: url(https://i1.sndcdn.com/avatars-jlY9CG0yBja9dsG3-6KpZug-t500x500.jpg) no-repeat center center;
           background-size: cover;
           border-radius: 50%;
