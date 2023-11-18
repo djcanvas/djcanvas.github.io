@@ -184,8 +184,8 @@ function movePointer( x, y ) {
     let ox = x - pointerX,
         oy = y - pointerY;
 
-    velocity.tx = velocity.tx + ( ox / 4*scale ) * ( touchInput ? 1 : -1 );
-    velocity.ty = velocity.ty + ( oy / 4*scale ) * ( touchInput ? 1 : -1 );
+    velocity.tx = velocity.tx + ( ox / 8*scale ) * ( touchInput ? 1 : -1 );
+    velocity.ty = velocity.ty + ( oy / 8*scale ) * ( touchInput ? 1 : -1 );
 
   }
 
