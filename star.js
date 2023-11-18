@@ -177,7 +177,7 @@ function render() {
 
 }
 
-function movePointer( x, y ) {
+/*function movePointer( x, y ) {
 
   if( typeof pointerX === 'number' && typeof pointerY === 'number' ) {
 
