@@ -194,7 +194,7 @@ function movePointer( x, y ) {
 
 }
 
-function onMouseMove( event ) {
+/*function onMouseMove( event ) {
 
   touchInput = false;
 
@@ -211,7 +211,7 @@ function onTouchMove( event ) {
   event.preventDefault();
 
 }
-
+*/
 function onMouseLeave() {
 
   pointerX = null;
