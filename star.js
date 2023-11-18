@@ -76,7 +76,7 @@ function recycleStar( star ) {
   star.z = STAR_MIN_SCALE + Math.random() * ( 1 - STAR_MIN_SCALE );
 
   if( direction === 'z' ) {
-    star.z = 0.1;
+    star.z = 0.001;
     star.x = Math.random() * width;
     star.y = Math.random() * height;
   }
