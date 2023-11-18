@@ -162,8 +162,8 @@ function render() {
     context.beginPath();
     context.moveTo( star.x, star.y );
 
-    var tailX = velocity.x * 2,
-        tailY = velocity.y * 2;
+    var tailX = velocity.x * 1.5,
+        tailY = velocity.y * 1.5;
 
     // stroke() wont work on an invisible line
     if( Math.abs( tailX ) < 0.1 ) tailX = 0.5;
