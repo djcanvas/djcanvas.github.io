@@ -126,11 +126,11 @@ function step() {
 
 function update() {
 
-  velocity.tx *= 0.76;
-  velocity.ty *= 0.76;
+  velocity.tx *= 0.96;
+  velocity.ty *= 0.96;
 
-  velocity.x += ( velocity.tx - velocity.x ) * 0.4;
-  velocity.y += ( velocity.ty - velocity.y ) * 0.4;
+  velocity.x += ( velocity.tx - velocity.x ) * 0.8;
+  velocity.y += ( velocity.ty - velocity.y ) * 0.8;
 
   stars.forEach( ( star ) => {
 
@@ -184,8 +184,8 @@ function movePointer( x, y ) {
     let ox = x - pointerX,
         oy = y - pointerY;
 
-    velocity.tx = velocity.tx + ( ox / 8*scale ) * ( touchInput ? 1 : -1 );
-    velocity.ty = velocity.ty + ( oy / 8*scale ) * ( touchInput ? 1 : -1 );
+    velocity.tx = velocity.tx + ( ox / 4*scale ) * ( touchInput ? 1 : -1 );
+    velocity.ty = velocity.ty + ( oy / 4*scale ) * ( touchInput ? 1 : -1 );
 
   }
 
