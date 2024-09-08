@@ -6,6 +6,11 @@
         about: 'This is a simple terminal emulator built with HTML, CSS, and JavaScript.',
         clear: ''
     };
+    const getUsername = () => {
+        // Mock logic to get username; replace with actual logic to get user details
+        const loggedIn = true; // Change this based on actual login status
+        return loggedIn ? "username" : "web";
+    };
 
     const getBrowser = () => {
         const userAgent = navigator.userAgent;
@@ -27,7 +32,7 @@
         prompt.className = 'prompt';
 
         const span = document.createElement('span');
-        span.textContent = `${getBrowser()}@web:~$`;
+        span.textContent = `${getBrowser()}@${getUsername()}:~$`;
         prompt.appendChild(span);
 
         const input = document.createElement('input');
