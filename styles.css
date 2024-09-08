@@ -19,10 +19,13 @@ html, body {
                     radial-gradient(circle at 20% 80%, rgba(0, 0, 0, 0.13), transparent);
   margin: 0;
   padding: 0;
+  overflow: hidden; /* Prevents scrolling */
 }
 
 /* Refined #terminal styles for better responsiveness and centering */
 #terminal {
+  position: absolute; /* Ensures the terminal is on the top layer */
+  z-index: 10; /* High z-index to always be on top */
   background-color: #1b1d23;
   width: 80vw;
   max-width: 800px;
@@ -33,6 +36,15 @@ html, body {
   border-radius: 8px;
   border: 1px solid #444;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Ensure the terminal is always centered */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  overflow: hidden;
 }
 
 /* Consistent prompt styling */
