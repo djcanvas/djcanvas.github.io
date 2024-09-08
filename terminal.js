@@ -1,135 +1,118 @@
 (function() {
-    const terminal = document.getElementById('terminal');
-    if (!terminal) {
-        console.error('Terminal element not found');
-        return;
-    }
-document.addEventListener('DOMContentLoaded', (event) => {
-  const terminalInput = document.querySelector('#terminal-input');
-
-  // Set focus to the terminal input
-  const focusTerminalInput = () => {
-    terminalInput.focus();
-  };
-
-  // Keep terminal input focused on external clicks
-  document.addEventListener('click', (event) => {
-    const terminal = document.querySelector('#terminal');
-    if (!terminal.contains(event.target)) {
-      focusTerminalInput();
-    }
-  });
-
-  // Refocus the terminal input when the window gains focus
-  window.addEventListener('focus', focusTerminalInput);
-
-  // Ensure input changes are detected and the terminal remains focused
-  terminalInput.addEventListener('blur', (event) => {
-    setTimeout(() => {
-      focusTerminalInput();
-    }, 0);
-  });
-
-  // Initial focus on page load
-  focusTerminalInput();
-});
-
-    const commands = {
-        help: 'Available commands: help, about, clear',
-        about: 'This is a simple terminal emulator built with HTML, CSS, and JavaScript.',
-        clear: ''
-    };
-
-    const detectBrowser = () => {
-        const userAgent = navigator.userAgent;
-        const browserInfo = { browser: "Unknown", version: "Unknown" };
-        const browserDetectionRules = [
-            { name: "Opera GX", rule: /\bOPR\/.*GX\b/i },
-            { name: "Opera", rule: /\bOPR\/|Opera\b/i },
-            { name: "Edge", rule: /\bEdg\b/i },
-            { name: "Chrome", rule: /\bChrome\b/i },
-            { name: "Safari", rule: /\bSafari\b/i, skip: /\bChrome\b/i },
-            { name: "Firefox", rule: /\bFirefox\b/i },
-            { name: "IE", rule: /\bMSIE\b|Trident\b/i }
-        ];
-
-        for (const browser of browserDetectionRules) {
-            if (browser.rule.test(userAgent)) {
-                if (browser.skip && browser.skip.test(userAgent)) {
-                    continue;
-                }
-                const versionMatch = new RegExp(browser.rule.source + "/([\\d\\.]+)").exec(userAgent);
-                browserInfo.browser = browser.name;
-                browserInfo.version = versionMatch ? versionMatch[1] : "Unknown";
-                break;
-            }
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const terminal = document.getElementById('terminal');
+        if (!terminal) {
+            console.error('Terminal element not found');
+            return;
         }
-        return browserInfo;
-    };
 
-    const detectedBrowser = detectBrowser();
-    console.log(`Browser: ${detectedBrowser.browser}, Version: ${detectedBrowser.version}`);
+        const commands = {
+            help: 'Available commands: help, about, clear',
+            about: 'This is a simple terminal emulator built with HTML, CSS, and JavaScript.',
+            clear: ''
+        };
 
-    const createPrompt = (readOnly) => {
-        const username = "user"; // Hard-coded username
+        const detectBrowser = () => {
+            const userAgent = navigator.userAgent;
+            const browserInfo = { browser: "Unknown", version: "Unknown" };
+            const browserDetectionRules = [
+                { name: "Opera GX", rule: /\bOPR\/.*GX\b/i },
+                { name: "Opera", rule: /\bOPR\/|Opera\b/i },
+                { name: "Edge", rule: /\bEdg\b/i },
+                { name: "Chrome", rule: /\bChrome\b/i },
+                { name: "Safari", rule: /\bSafari\b/i, skip: /\bChrome\b/i },
+                { name: "Firefox", rule: /\bFirefox\b/i },
+                { name: "IE", rule: /\bMSIE\b|Trident\b/i }
+            ];
+            for (const browser of browserDetectionRules) {
+                if (browser.rule.test(userAgent)) {
+                    if (browser.skip && browser.skip.test(userAgent)) {
+                        continue;
+                    }
+                    const versionMatch = new RegExp(browser.rule.source + "/([\\d\\.]+)").exec(userAgent);
+                    browserInfo.browser = browser.name;
+                    browserInfo.version = versionMatch ? versionMatch[1] : "Unknown";
+                    break;
+                }
+            }
+            return browserInfo;
+        };
 
-        const prompt = document.createElement('div');
-        prompt.className = 'prompt';
+        const detectedBrowser = detectBrowser();
+        console.log(`Browser: ${detectedBrowser.browser}, Version: ${detectedBrowser.version}`);
 
-        const span = document.createElement('span');
-        span.textContent = `${detectedBrowser.browser}@${username}:~$`;
-        prompt.appendChild(span);
+        const createPrompt = (readOnly) => {
+            const username = "user"; // Hard-coded username
+            const prompt = document.createElement('div');
+            prompt.className = 'prompt';
 
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.autofocus = true;
-        input.readOnly = readOnly;
-        prompt.appendChild(input);
+            const span = document.createElement('span');
+            span.textContent = `${detectedBrowser.browser}@${username}:~$`;
+            prompt.appendChild(span);
 
-        terminal.appendChild(prompt);
-        input.focus();
-        input.addEventListener('keydown', handleCommand);
-        terminal.scrollTop = terminal.scrollHeight;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.autofocus = true;
+            input.readOnly = readOnly;
+            prompt.appendChild(input);
 
-        // Ensure the input field is focused when clicking on the terminal
-        terminal.addEventListener('click', () => input.focus());
-    };
+            terminal.appendChild(prompt);
+            input.focus();
+            input.addEventListener('keydown', handleCommand);
+            terminal.scrollTop = terminal.scrollHeight;
 
-    const handleCommand = (e) => {
-        if (e.key === 'Enter') {
-            const input = e.target;
-            const command = input.value.trim();
-            let response = '';
+            // Ensure the input field is focused when clicking on the terminal
+            terminal.addEventListener('click', () => input.focus());
+        };
 
-            if (commands.hasOwnProperty(command)) {
-                if (command === 'clear') {
-                    terminal.innerHTML = '';
-                    response = '';
+        const handleCommand = (e) => {
+            if (e.key === 'Enter') {
+                const input = e.target;
+                const command = input.value.trim();
+                let response = '';
+
+                if (commands.hasOwnProperty(command)) {
+                    if (command === 'clear') {
+                        terminal.innerHTML = '';
+                        createPrompt(false);
+                        return; // Early return after clearing the terminal
+                    } else {
+                        response = commands[command];
+                    }
                 } else {
-                    response = commands[command];
+                    response = `${command}: command not found`;
+                    const errorElement = document.createElement('div');
+                    errorElement.className = 'command-error';
+                    errorElement.textContent = response;
+                    terminal.appendChild(errorElement);
                 }
-            } else {
-                response = `${command}: command not found`;
-                const errorElement = document.createElement('div');
-                errorElement.className = 'command-error';
-                errorElement.textContent = response;
-                terminal.appendChild(errorElement);
+
+                const result = document.createElement('div');
+                result.className = 'command-output';
+                result.textContent = response;
+                terminal.appendChild(result);
                 input.readOnly = true;
-
                 createPrompt(false);
-                return;
             }
+        };
 
-            const result = document.createElement('div');
-            result.className = 'command-output';
-            result.textContent = response;
-            terminal.appendChild(result);
-            input.readOnly = true;
+        // Keep terminal input focused on external clicks and window focus
+        const focusTerminalInput = () => {
+            const terminalInput = document.querySelector('#terminal .prompt input');
+            if (terminalInput) {
+                terminalInput.focus();
+            }
+        };
 
-            createPrompt(false);
-        }
-    };
+        document.addEventListener('click', (event) => {
+            if (!terminal.contains(event.target)) {
+                focusTerminalInput();
+            }
+        });
 
-    // Initialize the terminal with the first prompt
-    createPrompt(false);
+        window.addEventListener('focus', focusTerminalInput);
+
+        // Initialize the terminal with the first prompt
+        createPrompt(false);
+    });
 })();
