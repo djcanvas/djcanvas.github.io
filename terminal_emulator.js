@@ -14,7 +14,7 @@
     };
 
     // Create an audio element for the typewriter sound
-    const typewriterSound = new Audio('mixkit-typewriter-soft-click-1125.wav');
+    const typewriterSound = new Audio('mixkit-typewriter-soft-click-1125.mp3');
 
     const detectBrowser = () => {
       const userAgent = navigator.userAgent;
