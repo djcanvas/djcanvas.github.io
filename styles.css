@@ -38,3 +38,10 @@ body {
     font-family: monospace;
     outline: none;
 }
+#terminal {
+  background-color: white;  /* Or any other solid color you prefer */
+  border: 1px solid #ccc;    /* Optional: to give it a border */
+  padding: 10px;             /* Optional: to add some padding */
+  width: 100%;
+  height: auto;              /* Adjust height as needed */
+}
