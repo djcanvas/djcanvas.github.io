@@ -4,6 +4,27 @@
         console.error('Terminal element not found');
         return;
     }
+    document.addEventListener('DOMContentLoaded', (event) => {
+      const terminalInput = document.querySelector('.prompt input');
+
+      // Function to focus on the terminal input
+      const focusTerminalInput = () => {
+        terminalInput.focus();
+      };
+
+      // Focus the input initially
+      focusTerminalInput();
+
+      // Refocus input when clicking outside of terminal
+      document.addEventListener('click', (event) => {
+        if (!document.querySelector('#terminal').contains(event.target)) {
+          focusTerminalInput();
+        }
+      });
+
+      // Refocus input when the window gains focus
+      window.addEventListener('focus', focusTerminalInput);
+    });
 
     const commands = {
         help: 'Available commands: help, about, clear',
