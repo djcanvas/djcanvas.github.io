@@ -1,5 +1,4 @@
 /* styles.css */
-
 body {
     font-family: monospace;
     background-color: #f0f0f0; /* Assuming this is your preferred page background */
@@ -11,7 +10,6 @@ body {
     height: 100vh;
     color: #000; /* Setting a neutral color for the rest of the page */
 }
-
 #terminal {
     width: 80%;
     max-width: 800px;
@@ -29,18 +27,15 @@ body {
     justify-content: flex-start;
     align-items: flex-start;
     border-radius: 8px; /* Adding rounded edges */
-    positon: absolute;
+    position: absolute;
 }
-
 .prompt {
     display: flex;
     width: 100%; /* Ensure prompt spans full width */
 }
-
 .prompt span {
     margin-right: 5px;
 }
-
 .prompt input {
     flex: 1;
     border: none;
