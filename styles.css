@@ -2,19 +2,19 @@
 
 body {
     font-family: monospace;
-    background-color: #f0f0f0; /* Assuming this was your preferred page background */
+    background-color: #f0f0f0; /* Assuming this is your preferred page background */
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    color: #0f0; /* Ensuring the terminal text color is green */
+    color: #000; /* Setting a neutral color for the rest of the page */
 }
 
 #terminal {
     width: 80%;
-    max-width: 80%;
+    max-width: 800px;
     margin: 20px auto;
     padding: 10px;
     border: 2px solid #0f0;
@@ -22,11 +22,17 @@ body {
     overflow-y: auto;
     height: 400px;
     box-sizing: border-box;
-    color: #0f0; /* Ensuring the terminal text color is green */
+    color: #0f0; /* Ensure terminal text color is green */
+    font-family: inherit; /* Inherit the monospace font */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
 }
 
 .prompt {
     display: flex;
+    width: 100%; /* Ensure prompt spans full width */
 }
 
 .prompt span {
