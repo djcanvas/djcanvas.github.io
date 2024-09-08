@@ -76,9 +76,19 @@
                 }
             } else {
                 response = `${command}: command not found`;
+                const errorElement = document.createElement('div');
+                errorElement.className = 'command-error';
+                errorElement.textContent = response;
+                terminal.appendChild(errorElement);
+                input.readOnly = true;
+
+                createPrompt();
+                terminal.scrollTop = terminal.scrollHeight;
+                return;
             }
 
             const result = document.createElement('div');
+            result.className = 'command-output';
             result.textContent = response;
             terminal.appendChild(result);
             input.readOnly = true;

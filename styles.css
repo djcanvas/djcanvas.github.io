@@ -1,46 +1,52 @@
-/* styles.css */
 body {
-    font-family: monospace;
-    background-color: #f0f0f0; /* Assuming this is your preferred page background */
+    background-color: #282c34;
+    color: #ffffff;
+    font-family: Consolas, "Courier New", Courier, monospace;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    color: #000; /* Setting a neutral color for the rest of the page */
 }
+
 #terminal {
+    background-color: #1b1d23;
     width: 80%;
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 10px;
-    border: 2px solid #0f0;
-    background-color: #333;
+    height: 80%;
+    padding: 20px;
     overflow-y: auto;
-    height: 400px;
-    box-sizing: border-box;
-    color: #0f0; /* Ensure terminal text color is green */
-    font-family: inherit; /* Inherit the monospace font */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    border-radius: 8px; /* Adding rounded edges */
-    position: absolute;
+    border-radius: 8px;
+    border: 1px solid #444;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
+
 .prompt {
     display: flex;
-    width: 100%; /* Ensure prompt spans full width */
+    align-items: center;
 }
+
 .prompt span {
+    color: #4caf50; /* Green color for the prompt */
     margin-right: 5px;
 }
+
 .prompt input {
-    flex: 1;
+    background-color: transparent;
+    color: #ffffff;
     border: none;
-    background: none;
-    color: inherit;
     outline: none;
-    caret-color: #0f0; /* Ensure the caret color is visible */
+    width: 100%;
+}
+
+.command-output {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: #ffffff;
+}
+
+.command-error {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: #ff5555; /* Red color for error messages */
 }
