@@ -13,8 +13,16 @@
       clear: '',
     };
 
-    // Create an audio element for the typewriter sound
-    const typewriterSound = new Audio('mixkit-typewriter-soft-click-1125.mp3');
+    // Preload the sound and ensure multiple instances for rapid input handling
+    const soundSrc = 'mixkit-typewriter-soft-click-1125.wav';
+    const preloadAudio = new Audio(soundSrc);
+    preloadAudio.preload = 'auto';
+
+    const playSound = () => {
+      // Create a new instance of the audio element for each play
+      const audio = new Audio(soundSrc);
+      audio.play();
+    };
 
     const detectBrowser = () => {
       const userAgent = navigator.userAgent;
@@ -67,8 +75,12 @@
       terminal.appendChild(prompt);
       input.focus();
       input.addEventListener('keydown', handleCommand);
-      input.addEventListener('input', () => typewriterSound.play()); // Play sound on input
+      input.addEventListener('input', handleInput); // Handle input for sound
       terminal.scrollTop = terminal.scrollHeight;
+    };
+
+    const handleInput = () => {
+      playSound();
     };
 
     const handleCommand = (e) => {
