@@ -11,22 +11,7 @@
         clear: ''
     };
 
-    const getUsername = () => new Promise((resolve, reject) => {
-        try {
-            if (window.chrome && chrome.identity && chrome.identity.getProfileUserInfo) {
-                chrome.identity.getProfileUserInfo((userInfo) => {
-                    const loggedIn = !!userInfo.email;
-                    resolve(loggedIn ? userInfo.email : "web");
-                });
-            } else {
-                resolve('web');
-            }
-        } catch (error) {
-            reject(error);
-        }
-    });
-
-    function detectBrowser() {
+    const detectBrowser = () => {
         const userAgent = navigator.userAgent;
         const browserInfo = { browser: "Unknown", version: "Unknown" };
         const browserDetectionRules = [
@@ -36,7 +21,7 @@
             { name: "Chrome", rule: /\bChrome\b/i },
             { name: "Safari", rule: /\bSafari\b/i, skip: /\bChrome\b/i },
             { name: "Firefox", rule: /\bFirefox\b/i },
-            { name: "IE", rule: /\bMSIE\b|Trident\b/i },
+            { name: "IE", rule: /\bMSIE\b|Trident\b/i }
         ];
 
         for (const browser of browserDetectionRules) {
@@ -51,32 +36,29 @@
             }
         }
         return browserInfo;
-    }
+    };
 
     const detectedBrowser = detectBrowser();
     console.log(`Browser: ${detectedBrowser.browser}, Version: ${detectedBrowser.version}`);
 
     const createPrompt = () => {
-        getUsername().then((username) => {
-            const prompt = document.createElement('div');
-            prompt.className = 'prompt';
+        const username = "user"; // Hard-coded username
 
-            const span = document.createElement('span');
-            span.textContent = `${detectedBrowser.browser}@${username}:~$`;
-            prompt.appendChild(span);
+        const prompt = document.createElement('div');
+        prompt.className = 'prompt';
 
-            const input = document.createElement('input');
-            input.id = 'input';
-            input.type = 'text';
-            input.autofocus = true;
-            prompt.appendChild(input);
+        const span = document.createElement('span');
+        span.textContent = `${detectedBrowser.browser}@${username}:~$`;
+        prompt.appendChild(span);
 
-            terminal.appendChild(prompt);
-            input.focus();
-            input.addEventListener('keydown', handleCommand);
-        }).catch((error) => {
-            console.error('Error getting username', error);
-        });
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.autofocus = true;
+        prompt.appendChild(input);
+
+        terminal.appendChild(prompt);
+        input.focus();
+        input.addEventListener('keydown', handleCommand);
     };
 
     const handleCommand = (e) => {
@@ -88,7 +70,7 @@
             if (commands.hasOwnProperty(command)) {
                 if (command === 'clear') {
                     terminal.innerHTML = '';
-                    response = ''; // No output for clear command
+                    response = '';
                 } else {
                     response = commands[command];
                 }
@@ -100,6 +82,7 @@
             result.textContent = response;
             terminal.appendChild(result);
             input.readOnly = true;
+
             createPrompt();
             terminal.scrollTop = terminal.scrollHeight;
         }
