@@ -103,7 +103,7 @@
     terminal.innerHTML = '';
     createPrompt(false);
 
-    // Focus the terminal input when the website is first loaded
-    focusTerminalInput();
+    // Focus the terminal input when the website is first loaded, with a delay of 500ms
+    setTimeout(focusTerminalInput, 500);
   });
 })();
