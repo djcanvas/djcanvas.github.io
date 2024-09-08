@@ -1,52 +1,79 @@
+/* Ensuring the body uses border-box model */
 body {
-    background-color: #282c34;
-    color: #ffffff;
-    font-family: Consolas, "Courier New", Courier, monospace;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  background-image: radial-gradient(circle at top right, rgba(30, 10, 60, 0.5), transparent),
+                    radial-gradient(circle at 20% 80%, rgba(0, 0, 0, 0.13), transparent);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+/* Refined #terminal styles for better responsiveness */
 #terminal {
-    background-color: #1b1d23;
-    width: 80%;
-    height: 80%;
-    padding: 20px;
-    overflow-y: auto;
-    border-radius: 8px;
-    border: 1px solid #444;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  background-color: #1b1d23;
+  width: 80vw;
+  height: 80vh;
+  padding: 20px;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid #444;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
+/* Consistent prompt styling */
 .prompt {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .prompt span {
-    color: #4caf50; /* Green color for the prompt */
-    margin-right: 5px;
+  color: #4caf50; /* Green color for the prompt */
+  margin-right: 5px;
 }
 
 .prompt input {
-    background-color: transparent;
-    color: #ffffff;
-    border: none;
-    outline: none;
-    width: 100%;
+  background-color: transparent;
+  color: #ffffff;
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+/* Optimized command-output and command-error styles */
+.command-output, .command-error {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Command error color */
+.command-error {
+  color: #ff5555; /* Red color for error messages */
 }
 
 .command-output {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    color: #ffffff;
+  color: #ffffff;
 }
 
-.command-error {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    color: #ff5555; /* Red color for error messages */
+/* Canvas element should not interfere with layout */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Readable links */
+a {
+  position: absolute;
+  bottom: 2vmin;
+  right: 2vmin;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #fff540;
 }
