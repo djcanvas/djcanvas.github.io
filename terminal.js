@@ -7,14 +7,12 @@
     };
 
     const getUsername = (callback) => {
-        // Mock logic to get username; replace with actual logic to get user details
         if (window.chrome && chrome.identity && chrome.identity.getProfileUserInfo) {
             chrome.identity.getProfileUserInfo(function(userInfo) {
                 const loggedIn = userInfo.id ? true : false;
                 callback(loggedIn ? "username" : "web");
             });
         } else {
-            // Fallback for non-chrome browsers
             callback('web');
         }
     };
