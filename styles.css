@@ -36,15 +36,10 @@ html, body {
   border-radius: 8px;
   border: 1px solid #444;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
-
-/* Ensure the terminal is always centered */
-body {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  overflow: hidden;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
 }
 
 /* Consistent prompt styling */
@@ -71,6 +66,8 @@ body {
 .command-output, .command-error {
   white-space: pre-wrap;
   word-wrap: break-word;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Command error color */
