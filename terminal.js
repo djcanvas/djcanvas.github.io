@@ -4,27 +4,30 @@
         console.error('Terminal element not found');
         return;
     }
-    document.addEventListener('DOMContentLoaded', (event) => {
-      const terminalInput = document.querySelector('.prompt input');
+document.addEventListener('DOMContentLoaded', (event) => {
+  const terminalInput = document.querySelector('.prompt input');
 
-      // Function to focus on the terminal input
-      const focusTerminalInput = () => {
-        terminalInput.focus();
-      };
+  // Set focus to the terminal input
+  const focusTerminalInput = () => {
+    terminalInput.focus();
+  };
 
-      // Focus the input initially
+  // Keep terminal input focused on external clicks
+  document.addEventListener('click', (event) => {
+    const terminal = document.querySelector('#terminal');
+    if (!terminal.contains(event.target)) {
       focusTerminalInput();
+    }
+  });
 
-      // Refocus input when clicking outside of terminal
-      document.addEventListener('click', (event) => {
-        if (!document.querySelector('#terminal').contains(event.target)) {
-          focusTerminalInput();
-        }
-      });
+  // Keep terminal input focused on window focus
+  window.addEventListener('focus', (event) => {
+    focusTerminalInput();
+  });
 
-      // Refocus input when the window gains focus
-      window.addEventListener('focus', focusTerminalInput);
-    });
+  // Initial focus on page load
+  focusTerminalInput();
+});
 
     const commands = {
         help: 'Available commands: help, about, clear',
