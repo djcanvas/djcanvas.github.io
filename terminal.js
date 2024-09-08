@@ -41,7 +41,7 @@
         const detectedBrowser = detectBrowser();
         console.log(`Browser: ${detectedBrowser.browser}, Version: ${detectedBrowser.version}`);
 
-        const createPrompt = (readOnly) => {
+        const createPrompt = (readOnly = false) => {
             const username = "user"; // Hard-coded username
             const prompt = document.createElement('div');
             prompt.className = 'prompt';
@@ -73,32 +73,35 @@
 
                 if (commands.hasOwnProperty(command)) {
                     if (command === 'clear') {
-                        terminal.innerHTML = '';
-                        createPrompt(false);
-                        return; // Early return after clearing the terminal
+                        terminal.innerHTML = ''; // Clear the terminal content
+                        createPrompt(false); // Create a new prompt after clearing
+                        return;
                     } else {
                         response = commands[command];
                     }
                 } else {
                     response = `${command}: command not found`;
-                    const errorElement = document.createElement('div');
-                    errorElement.className = 'command-error';
-                    errorElement.textContent = response;
-                    terminal.appendChild(errorElement);
                 }
 
-                const result = document.createElement('div');
-                result.className = 'command-output';
-                result.textContent = response;
-                terminal.appendChild(result);
+                if (response) {
+                    const result = document.createElement('div');
+                    result.className = 'command-output';
+                    result.textContent = response;
+                    terminal.appendChild(result);
+                }
+
                 input.readOnly = true;
                 createPrompt(false);
             }
         };
 
+        // Initial terminal setup
+        terminal.innerHTML = ''; // Ensure terminal starts empty
+        createPrompt(false);
+
         // Keep terminal input focused on external clicks and window focus
         const focusTerminalInput = () => {
-            const terminalInput = document.querySelector('#terminal .prompt input');
+            const terminalInput = document.querySelector('#terminal .prompt input[type="text"]:not([readOnly])');
             if (terminalInput) {
                 terminalInput.focus();
             }
@@ -111,8 +114,5 @@
         });
 
         window.addEventListener('focus', focusTerminalInput);
-
-        // Initialize the terminal with the first prompt
-        createPrompt(false);
     });
 })();
