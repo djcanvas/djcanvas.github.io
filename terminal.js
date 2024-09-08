@@ -60,9 +60,6 @@
             input.focus();
             input.addEventListener('keydown', handleCommand);
             terminal.scrollTop = terminal.scrollHeight;
-
-            // Ensure the input field is focused when clicking on the terminal
-            terminal.addEventListener('click', () => input.focus());
         };
 
         const handleCommand = (e) => {
@@ -75,7 +72,7 @@
                     if (command === 'clear') {
                         terminal.innerHTML = ''; // Clear the terminal content
                         createPrompt(false); // Create a new prompt after clearing
-                        return;
+                        return; // Early return after clearing the terminal
                     } else {
                         response = commands[command];
                     }
@@ -99,7 +96,7 @@
         terminal.innerHTML = ''; // Ensure terminal starts empty
         createPrompt(false);
 
-        // Keep terminal input focused on external clicks and window focus
+        // Function to focus the terminal input
         const focusTerminalInput = () => {
             const terminalInput = document.querySelector('#terminal .prompt input[type="text"]:not([readOnly])');
             if (terminalInput) {
@@ -107,12 +104,11 @@
             }
         };
 
-        document.addEventListener('click', (event) => {
-            if (!terminal.contains(event.target)) {
-                focusTerminalInput();
-            }
-        });
-
+        // Set up event listeners to always keep the terminal input focused
         window.addEventListener('focus', focusTerminalInput);
+
+        document.addEventListener('click', focusTerminalInput);
+
+        terminal.addEventListener('click', focusTerminalInput);
     });
 })();
