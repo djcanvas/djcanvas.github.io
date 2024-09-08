@@ -2,14 +2,14 @@
 
 body {
     font-family: monospace;
- /* Assuming this is your preferred page background */
+    background-color: #f0f0f0; /* Assuming this is your preferred page background */
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-
+    color: #000; /* Setting a neutral color for the rest of the page */
 }
 
 #terminal {
@@ -18,7 +18,7 @@ body {
     margin: 20px auto;
     padding: 10px;
     border: 2px solid #0f0;
-    background-color: #000000;
+    background-color: #333;
     overflow-y: auto;
     height: 400px;
     box-sizing: border-box;
@@ -28,7 +28,8 @@ body {
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    position: absolute;
+    border-radius: 8px; /* Adding rounded edges */
+    positon: absolute;
 }
 
 .prompt {
