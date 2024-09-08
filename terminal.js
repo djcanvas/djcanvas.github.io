@@ -5,7 +5,7 @@
         return;
     }
 document.addEventListener('DOMContentLoaded', (event) => {
-  const terminalInput = document.querySelector('.prompt input');
+  const terminalInput = document.querySelector('#terminal-input');
 
   // Set focus to the terminal input
   const focusTerminalInput = () => {
@@ -20,9 +20,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
   });
 
-  // Keep terminal input focused on window focus
-  window.addEventListener('focus', (event) => {
-    focusTerminalInput();
+  // Refocus the terminal input when the window gains focus
+  window.addEventListener('focus', focusTerminalInput);
+
+  // Ensure input changes are detected and the terminal remains focused
+  terminalInput.addEventListener('blur', (event) => {
+    setTimeout(() => {
+      focusTerminalInput();
+    }, 0);
   });
 
   // Initial focus on page load
