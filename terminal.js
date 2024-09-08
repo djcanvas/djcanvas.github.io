@@ -1,5 +1,9 @@
 (function() {
     const terminal = document.getElementById('terminal');
+    if (!terminal) {
+        console.error('Terminal element not found');
+        return;
+    }
 
     const commands = {
         help: 'Available commands: help, about, clear',
@@ -7,16 +11,16 @@
         clear: ''
     };
 
-    const getUsername = (callback) => {
+    const getUsername = () => new Promise((resolve) => {
         if (window.chrome && chrome.identity && chrome.identity.getProfileUserInfo) {
-            chrome.identity.getProfileUserInfo(function(userInfo) {
+            chrome.identity.getProfileUserInfo((userInfo) => {
                 const loggedIn = !!userInfo.email;
-                callback(loggedIn ? userInfo.email : "web");
+                resolve(loggedIn ? userInfo.email : "web");
             });
         } else {
-            callback('web');
+            resolve('web');
         }
-    };
+    });
 
     function detectBrowser() {
         const userAgent = navigator.userAgent;
@@ -38,7 +42,7 @@
                 if (browser.skip && browser.skip.test(userAgent)) {
                     continue;
                 }
-                let versionMatch = userAgent.match(new RegExp(browser.rule.source + "/([\\d\\.]+)"));
+                const versionMatch = userAgent.match(new RegExp(browser.rule.source + "/([\\d\\.]+)"));
                 browserInfo.browser = browser.name;
                 browserInfo.version = versionMatch ? versionMatch[1] : "Unknown";
                 break;
@@ -51,7 +55,7 @@
     console.log(`Browser: ${detectedBrowser.browser}, Version: ${detectedBrowser.version}`);
 
     const createPrompt = () => {
-        getUsername((username) => {
+        getUsername().then((username) => {
             const prompt = document.createElement('div');
             prompt.className = 'prompt';
             const span = document.createElement('span');
@@ -64,7 +68,7 @@
             prompt.appendChild(input);
             terminal.appendChild(prompt);
             input.focus();
-            input.addEventListener('keydown', handleCommand, { once: true });
+            input.addEventListener('keydown', handleCommand);
         });
     };
 
@@ -73,7 +77,6 @@
             const input = e.target;
             const command = input.value.trim();
             let response = '';
-
             if (commands.hasOwnProperty(command)) {
                 if (command === 'clear') {
                     terminal.innerHTML = '';
@@ -84,8 +87,6 @@
             } else {
                 response = `${command}: command not found`;
             }
-
-            input.removeEventListener('keydown', handleCommand);
             const result = document.createElement('div');
             result.textContent = response;
             terminal.appendChild(result);
