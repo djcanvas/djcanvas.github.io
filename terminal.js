@@ -41,7 +41,7 @@
     const detectedBrowser = detectBrowser();
     console.log(`Browser: ${detectedBrowser.browser}, Version: ${detectedBrowser.version}`);
 
-    const createPrompt = () => {
+    const createPrompt = (readOnly) => {
         const username = "user"; // Hard-coded username
 
         const prompt = document.createElement('div');
@@ -54,11 +54,16 @@
         const input = document.createElement('input');
         input.type = 'text';
         input.autofocus = true;
+        input.readOnly = readOnly;
         prompt.appendChild(input);
 
         terminal.appendChild(prompt);
         input.focus();
         input.addEventListener('keydown', handleCommand);
+        terminal.scrollTop = terminal.scrollHeight;
+
+        // Ensure the input field is focused when clicking on the terminal
+        terminal.addEventListener('click', () => input.focus());
     };
 
     const handleCommand = (e) => {
@@ -82,8 +87,7 @@
                 terminal.appendChild(errorElement);
                 input.readOnly = true;
 
-                createPrompt();
-                terminal.scrollTop = terminal.scrollHeight;
+                createPrompt(false);
                 return;
             }
 
@@ -93,10 +97,10 @@
             terminal.appendChild(result);
             input.readOnly = true;
 
-            createPrompt();
-            terminal.scrollTop = terminal.scrollHeight;
+            createPrompt(false);
         }
     };
 
-    createPrompt();
+    // Initialize the terminal with the first prompt
+    createPrompt(false);
 })();
