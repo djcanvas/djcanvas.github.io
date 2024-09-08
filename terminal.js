@@ -25,27 +25,25 @@
             version: "Unknown"
         };
         const browserDetectionRules = [
-            { name: "Opera GX", rule: /OPR\/.*GX/i },
-            { name: "Opera", rule: /OPR|Opera/i },
-            { name: "Edge", rule: /Edg/i },
-            { name: "Chrome", rule: /Chrome/i },
-            { name: "Safari", rule: /Safari/i },
-            { name: "Firefox", rule: /Firefox/i },
-            { name: "IE", rule: /MSIE|Trident/i }
+            { name: "Opera GX", rule: /\bOPR\/.*GX\b/i },
+            { name: "Opera", rule: /\bOPR\/|Opera\b/i },
+            { name: "Edge", rule: /\bEdg\b/i },
+            { name: "Chrome", rule: /\bChrome\b/i },
+            { name: "Safari", rule: /\bSafari\b/i, skip: /\bChrome\b/i },
+            { name: "Firefox", rule: /\bFirefox\b/i },
+            { name: "IE", rule: /\bMSIE\b|Trident\b/i }
         ];
         for (const browser of browserDetectionRules) {
             if (browser.rule.test(userAgent)) {
+                if (browser.skip && browser.skip.test(userAgent)) {
+                    continue;
+                }
                 let versionMatch = userAgent.match(new RegExp(browser.rule.source + "/([\\d\\.]+)"));
                 browserInfo.browser = browser.name;
                 browserInfo.version = versionMatch ? versionMatch[1] : "Unknown";
                 break;
             }
         }
-        // Special case handling for Safari since it also contains "Chrome" in some versions
-        if (browserInfo.browser === "Safari" && /Chrome/i.test(userAgent)) {
-            browserInfo.browser = "Chrome";
-        }
-
         return browserInfo;
     }
 
