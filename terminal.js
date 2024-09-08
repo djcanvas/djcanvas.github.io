@@ -1,15 +1,22 @@
 (function() {
     const terminal = document.getElementById('terminal');
-
     const commands = {
         help: 'Available commands: help, about, clear',
         about: 'This is a simple terminal emulator built with HTML, CSS, and JavaScript.',
         clear: ''
     };
-    const getUsername = () => {
+
+    const getUsername = (callback) => {
         // Mock logic to get username; replace with actual logic to get user details
-        const loggedIn = true; // Change this based on actual login status
-        return loggedIn ? "username" : "web";
+        if (window.chrome && chrome.identity && chrome.identity.getProfileUserInfo) {
+            chrome.identity.getProfileUserInfo(function(userInfo) {
+                const loggedIn = userInfo.id ? true : false;
+                callback(loggedIn ? "username" : "web");
+            });
+        } else {
+            // Fallback for non-chrome browsers
+            callback('web');
+        }
     };
 
     const getBrowser = () => {
@@ -28,22 +35,21 @@
     };
 
     const createPrompt = () => {
-        const prompt = document.createElement('div');
-        prompt.className = 'prompt';
-
-        const span = document.createElement('span');
-        span.textContent = `${getBrowser()}@${getUsername()}:~$`;
-        prompt.appendChild(span);
-
-        const input = document.createElement('input');
-        input.id = 'input';
-        input.type = 'text';
-        input.autofocus = true;
-        prompt.appendChild(input);
-
-        terminal.appendChild(prompt);
-        input.focus();
-        input.addEventListener('keydown', handleCommand);
+        getUsername((username) => {
+            const prompt = document.createElement('div');
+            prompt.className = 'prompt';
+            const span = document.createElement('span');
+            span.textContent = `${getBrowser()}@${username}:~$`;
+            prompt.appendChild(span);
+            const input = document.createElement('input');
+            input.id = 'input';
+            input.type = 'text';
+            input.autofocus = true;
+            prompt.appendChild(input);
+            terminal.appendChild(prompt);
+            input.focus();
+            input.addEventListener('keydown', handleCommand);
+        });
     };
 
     const handleCommand = e => {
@@ -51,7 +57,6 @@
             const input = e.target;
             const command = input.value.trim();
             let response = '';
-
             if (commands.hasOwnProperty(command)) {
                 if (command === 'clear') {
                     terminal.innerHTML = '';
@@ -61,8 +66,7 @@
             } else {
                 response = `${command}: command not found`;
             }
-
-            e.target.removeEventListener('keydown', handleCommand);
+            input.removeEventListener('keydown', handleCommand);
             const result = document.createElement('div');
             result.textContent = response;
             terminal.appendChild(result);
