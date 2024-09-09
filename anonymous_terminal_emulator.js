@@ -49,7 +49,6 @@
       return browserInfo;
     };
     const detectedBrowser = detectBrowser();
-    console.log(`Browser: ${detectedBrowser.browser}, Version: ${detectedBrowser.version}`);
 
     const createPrompt = (readOnly = false, placeholder = '') => {
       const prompt = document.createElement('div');
@@ -67,15 +66,12 @@
       input.focus();
       input.addEventListener('keydown', handleInput);
       terminal.scrollTop = terminal.scrollHeight;
-      console.log("Prompt created");
     };
 
     const handleInput = (e) => {
-      console.log("Key pressed:", e.key);
       if (e.key === 'Enter') {
         const input = e.target;
         const inputValue = input.value.trim();
-        console.log("Input value:", inputValue);
         if (inputMode === 'command') {
           handleCommand(inputValue);
         } else if (inputMode === 'password') {
@@ -86,8 +82,6 @@
     };
 
     const handleCommand = (inputValue) => {
-      console.log("Handling command:", inputValue);
-
       const commandLine = inputValue.split(' ');
       const command = commandLine[0];
       let response = '';
@@ -110,7 +104,6 @@
           case 'user':
             if (commandLine.length === 2) {
               newUsername = commandLine[1];
-              console.log("Attempting to set username to:", newUsername);
               if (users.hasOwnProperty(newUsername)) {
                 inputMode = 'password';
                 terminal.lastChild.remove();
@@ -141,9 +134,6 @@
     };
 
     const handlePassword = (password) => {
-      console.log("Handling password:", password);
-
-      console.log("Password entered for username:", newUsername);
       if (users[newUsername] === password) {
         username = newUsername;
         newUsername = ''; // Clear the temp username storage
