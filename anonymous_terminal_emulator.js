@@ -2,18 +2,20 @@
   document.addEventListener('DOMContentLoaded', (event) => {
     const terminal = document.getElementById('terminal');
     if (!terminal) {
-      console.error('Terminal element not found');
+      console.error('Terminal element not found. Please ensure the element with id "terminal" is present in the document.');
       return;
     }
 
     const commands = {
-      help: 'Available commands: help, about, aboutme, clear, dino, insta',
+      help: 'Available commands: help, about, clear, dino, insta, user',
       about: 'Just a project trying different things',
-      aboutme: 'Chemistry student somewhere in Germany ',
       clear: '',
       dino: 'Redirecting to /dino...',
-      insta: 'Redirecting to instagram...',
+      insta: 'Redirecting to Instagram...',
+      user: 'Usage: user <username>'
     };
+
+    let username = 'user'; // Initial hard-coded username
 
     const detectBrowser = () => {
       const userAgent = navigator.userAgent;
@@ -46,7 +48,6 @@
     console.log(`Browser: ${detectedBrowser.browser}, Version: ${detectedBrowser.version}`);
 
     const createPrompt = (readOnly = false) => {
-      const username = 'user'; // Hard-coded username
       const prompt = document.createElement('div');
       prompt.className = 'prompt';
       const span = document.createElement('span');
@@ -66,7 +67,8 @@
     const handleCommand = (e) => {
       if (e.key === 'Enter') {
         const input = e.target;
-        const command = input.value.trim();
+        const commandLine = input.value.trim().split(' ');
+        const command = commandLine[0];
         let response = '';
         let isError = false;
 
@@ -79,10 +81,18 @@
             response = commands[command];
             window.location.assign('/dino'); // Redirect to /dino
             return; // Early return after redirecting
-          } else if (command === 'insta'){
+          } else if (command === 'insta') {
             response = commands[command];
-            window.location.assign("https://instagram.com/davidschlenk_");
+            window.location.assign("https://instagram.com/davidschlenk_"); // Use full, secure URL
             return;
+          } else if (command === 'user') {
+            if (commandLine.length === 2) {
+              username = commandLine[1];
+              response = `Username set to ${username}`;
+            } else {
+              response = commands[command];
+              isError = true;
+            }
           } else {
             response = commands[command];
           }
@@ -100,6 +110,7 @@
           }
           terminal.appendChild(result);
         }
+
         input.readOnly = true;
         createPrompt(false);
       }
@@ -115,9 +126,9 @@
     window.addEventListener('focus', focusTerminalInput);
     document.addEventListener('click', focusTerminalInput);
     terminal.addEventListener('click', focusTerminalInput);
+
     terminal.innerHTML = '';
     createPrompt(false);
-
     setTimeout(focusTerminalInput, 500); // Maybe faster focus
   });
 })();
