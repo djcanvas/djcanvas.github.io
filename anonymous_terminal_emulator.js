@@ -104,6 +104,6 @@
     createPrompt(false);
 
     // Focus the terminal input when the website is first loaded, with a delay of 500ms
-    setTimeout(focusTerminalInput, 500);
+    setTimeout(focusTerminalInput, 1000);
   });
 })();
