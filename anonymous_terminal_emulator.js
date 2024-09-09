@@ -14,12 +14,10 @@
       INSTA: 'Redirecting to Instagram...',
       USER: 'Usage: user <username>',
     };
-
     const users = {
       'djcanvas': '123456789',
       // Add more predefined usernames and passwords here
     };
-
     let username = 'user'; // Initial hard-coded username
     let inputMode = 'command'; // Default mode is 'command'
 
@@ -49,7 +47,6 @@
       }
       return browserInfo;
     };
-
     const detectedBrowser = detectBrowser();
     console.log(`Browser: ${detectedBrowser.browser}, Version: ${detectedBrowser.version}`);
 
@@ -69,12 +66,15 @@
       input.focus();
       input.addEventListener('keydown', handleInput);
       terminal.scrollTop = terminal.scrollHeight;
+      console.log("Prompt created");
     };
 
     const handleInput = (e) => {
+      console.log("Key pressed:", e.key);
       if (e.key === 'Enter') {
         const input = e.target;
         const inputValue = input.value.trim();
+        console.log("Input value:", inputValue);
         if (inputMode === 'command') {
           handleCommand(inputValue);
         } else if (inputMode === 'password') {
@@ -85,6 +85,8 @@
     };
 
     const handleCommand = (inputValue) => {
+      console.log("Handling command:", inputValue);
+
       const commandLine = inputValue.split(' ');
       const command = commandLine[0];
       let response = '';
@@ -107,6 +109,7 @@
           case 'user':
             if (commandLine.length === 2) {
               const newUsername = commandLine[1];
+              console.log("Attempting to set username to:", newUsername);
               if (users.hasOwnProperty(newUsername)) {
                 inputMode = 'password';
                 terminal.lastChild.remove();
@@ -132,12 +135,16 @@
       if (response) {
         displayMessage(response, isError);
       }
+
       createPrompt(false);
     };
 
     const handlePassword = (password) => {
+      console.log("Handling password:", password);
+
       const lastPrompt = terminal.querySelector('.prompt:last-child');
       const newUsername = lastPrompt.querySelector('input').placeholder.split(' ')[2];
+      console.log("Password entered for username:", newUsername);
       if (users[newUsername] === password) {
         username = newUsername;
         displayMessage(`Username set to ${username}`);
