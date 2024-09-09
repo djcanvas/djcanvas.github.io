@@ -80,7 +80,7 @@
             return; // Early return after redirecting
           } else if (command === 'insta'){
             response = commands[command];
-            window.location.assign("instagram.com/davidschlenk_")
+            window.location.assign("instagram.com/davidschlenk_");
             return;
           } else {
             response = commands[command];
