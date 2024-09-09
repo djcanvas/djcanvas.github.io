@@ -9,6 +9,8 @@
 
 /* Ensuring the body uses border-box model and centers content */
 html, body {
+font-family: 'Roboto', sans-serif;
+
   width: 100%;
   height: 100%;
   display: flex;
@@ -24,6 +26,7 @@ html, body {
 
 /* Refined #terminal styles for better responsiveness and centering */
 #terminal {
+font-family: 'Roboto', sans-serif;
   position: relative; /* Use relative instead of absolute */
   z-index: 10; /* High z-index to always be on top */
   background-color: #1b1d23;
@@ -111,3 +114,6 @@ a:hover {
     clip: rect(0, 0, 0, 0);
     border: 0;
 }
+.error-message {
+        color: #ff3d3d;
+      }

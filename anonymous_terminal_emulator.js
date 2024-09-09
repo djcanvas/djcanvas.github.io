@@ -5,10 +5,12 @@
       console.error('Terminal element not found');
       return;
     }
+
     const commands = {
-      help: 'Available commands: help, about, clear',
+      help: 'Available commands: help, about, clear, dino',
       about: 'This is a simple terminal emulator built with HTML, CSS, and JavaScript.',
       clear: '',
+      dino: 'Redirecting to /dino...'
     };
 
     const detectBrowser = () => {
@@ -64,21 +66,32 @@
         const input = e.target;
         const command = input.value.trim();
         let response = '';
+        let isError = false;
+
         if (commands.hasOwnProperty(command)) {
           if (command === 'clear') {
             terminal.innerHTML = ''; // Clear the terminal content
             createPrompt(false); // Create a new prompt after clearing
             return; // Early return after clearing the terminal
+          } else if (command === 'dino') {
+            response = commands[command];
+            window.location.href = '/dino'; // Redirect to /dino
+            return; // Early return after redirecting
           } else {
             response = commands[command];
           }
         } else {
           response = `${command}: command not found`;
+          isError = true;
         }
+
         if (response) {
           const result = document.createElement('div');
           result.className = 'command-output';
           result.textContent = response;
+          if (isError) {
+            result.classList.add('error-message');
+          }
           terminal.appendChild(result);
         }
         input.readOnly = true;
@@ -86,24 +99,19 @@
       }
     };
 
-    // Function to focus the terminal input
     const focusTerminalInput = (event) => {
       const terminalInput = terminal.querySelector('.prompt input[type="text"]:not([readOnly])');
-      if (terminalInput && (!event || event.target.closest('#terminal') === null)) {
+      if (terminalInput && (!event || !event.target.closest('#terminal'))) {
         terminalInput.focus();
       }
     };
 
-    // Set up event listeners to always keep the terminal input focused
     window.addEventListener('focus', focusTerminalInput);
     document.addEventListener('click', focusTerminalInput);
     terminal.addEventListener('click', focusTerminalInput);
-
-    // Initial terminal setup - ensure terminal starts empty
     terminal.innerHTML = '';
     createPrompt(false);
 
-    // Focus the terminal input when the website is first loaded, with a delay of 500ms
-    setTimeout(focusTerminalInput, 1000);
+    setTimeout(focusTerminalInput, 500); // Maybe faster focus
   });
 })();
