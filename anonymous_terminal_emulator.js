@@ -20,6 +20,7 @@
     };
     let username = 'user'; // Initial hard-coded username
     let inputMode = 'command'; // Default mode is 'command'
+    let newUsername = ''; // Username to be checked in password mode
 
     const detectBrowser = () => {
       const userAgent = navigator.userAgent;
@@ -108,7 +109,7 @@
             return;
           case 'user':
             if (commandLine.length === 2) {
-              const newUsername = commandLine[1];
+              newUsername = commandLine[1];
               console.log("Attempting to set username to:", newUsername);
               if (users.hasOwnProperty(newUsername)) {
                 inputMode = 'password';
@@ -142,11 +143,10 @@
     const handlePassword = (password) => {
       console.log("Handling password:", password);
 
-      const lastPrompt = terminal.querySelector('.prompt:last-child');
-      const newUsername = lastPrompt.querySelector('input').placeholder.split(' ')[2];
       console.log("Password entered for username:", newUsername);
       if (users[newUsername] === password) {
         username = newUsername;
+        newUsername = ''; // Clear the temp username storage
         displayMessage(`Username set to ${username}`);
       } else {
         displayMessage('Incorrect password', true);
