@@ -7,11 +7,11 @@
     }
 
     const commands = {
-      help: 'Available commands: help, about, clear, dino',
+      help: 'Available commands: help, about, clear, dino, insta',
       about: 'Just a project trying different things',
       clear: '',
       dino: 'Redirecting to /dino...',
-      insta: 'Redirecting to instagram',
+      insta: 'Redirecting to instagram...',
     };
 
     const detectBrowser = () => {
@@ -80,7 +80,7 @@
             return; // Early return after redirecting
           } else if (command === 'insta'){
             response = commands[command];
-            window.location.assign("instagram.com/davidschlenk_");
+            window.location.assign("https://instagram.com/davidschlenk_");
             return;
           } else {
             response = commands[command];
