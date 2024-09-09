@@ -137,3 +137,8 @@ html, body {
     padding: 0 8px;
   }
 }
+  .modern-button {
+       padding: 10px 20px;
+       font-family: 'Open Sans', sans-serif;
+       cursor: pointer;
+   }
