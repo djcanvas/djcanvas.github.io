@@ -7,7 +7,7 @@
     }
 
     const commands = {
-      help: 'Available commands: help, about, clear, dino, insta',
+      help: 'Available commands: help, about, aboutme, clear, dino, insta',
       about: 'Just a project trying different things',
       aboutme: 'Chemistry student somewhere in Germany ',
       clear: '',
