@@ -8,9 +8,10 @@
 
     const commands = {
       help: 'Available commands: help, about, clear, dino',
-      about: 'This is a simple terminal emulator built with HTML, CSS, and JavaScript.',
+      about: 'Just a project trying different things',
       clear: '',
-      dino: 'Redirecting to /dino...'
+      dino: 'Redirecting to /dino...',
+      insta: 'Redirecting to instagram',
     };
 
     const detectBrowser = () => {
@@ -77,6 +78,10 @@
             response = commands[command];
             window.location.assign('/dino'); // Redirect to /dino
             return; // Early return after redirecting
+          } else if (command === 'insta'){
+            response = commands[command];
+            window.location.assign("instagram.com/davidschlenk_")
+            return;
           } else {
             response = commands[command];
           }
