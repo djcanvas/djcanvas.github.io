@@ -3,9 +3,10 @@
  * found in the LICENSE file. */
 
 html, body {
+  margin-top: 200px;
   padding: 10;
 
-  height: 80%;
+  height: 100%;
   
   margin: auto;
   width: 50%;
