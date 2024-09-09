@@ -7,8 +7,9 @@
     }
 
     const commands = {
-      help: 'Available commands: help, about, clear, dino, insta, user',
+      help: 'Available commands: help, about, aboutme, clear, dino, insta, user',
       about: 'Just a project trying different things',
+      aboutme: 'chemistry student living in Germany',
       clear: '',
       dino: 'Redirecting to /dino...',
       insta: 'Redirecting to Instagram...',
