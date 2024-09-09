@@ -7,13 +7,17 @@
     }
 
     const commands = {
-      help: 'Available commands: help, about, aboutme, clear, dino, insta, user',
+      help: 'Available commands: help, about, clear, dino, insta, user',
       about: 'Just a project trying different things',
-      aboutme: 'chemistry student living in Germany',
       clear: '',
       dino: 'Redirecting to /dino...',
       insta: 'Redirecting to Instagram...',
       user: 'Usage: user <username>'
+    };
+
+    const users = {
+      'djcanvas': '12345678'
+      // Add more predefined usernames and passwords here
     };
 
     let username = 'user'; // Initial hard-coded username
@@ -48,7 +52,7 @@
     const detectedBrowser = detectBrowser();
     console.log(`Browser: ${detectedBrowser.browser}, Version: ${detectedBrowser.version}`);
 
-    const createPrompt = (readOnly = false) => {
+    const createPrompt = (readOnly = false, placeholder = '') => {
       const prompt = document.createElement('div');
       prompt.className = 'prompt';
       const span = document.createElement('span');
@@ -58,6 +62,7 @@
       input.type = 'text';
       input.autofocus = true;
       input.readOnly = readOnly;
+      input.placeholder = placeholder;
       prompt.appendChild(input);
       terminal.appendChild(prompt);
       input.focus();
@@ -88,8 +93,14 @@
             return;
           } else if (command === 'user') {
             if (commandLine.length === 2) {
-              username = commandLine[1];
-              response = `Username set to ${username}`;
+              const newUsername = commandLine[1];
+              if (users.hasOwnProperty(newUsername)) {
+                requestPassword(newUsername);
+                return; // Early return to wait for password input
+              } else {
+                username = newUsername;
+                response = `Username set to ${username}`;
+              }
             } else {
               response = commands[command];
               isError = true;
@@ -115,6 +126,32 @@
         input.readOnly = true;
         createPrompt(false);
       }
+    };
+
+    const requestPassword = (newUsername) => {
+      const input = document.querySelector('.prompt input');
+      input.placeholder = 'Enter password';
+      input.value = '';
+      input.addEventListener('keydown', function onPasswordInput(e) {
+        if (e.key === 'Enter') {
+          const password = e.target.value;
+          if (users[newUsername] === password) {
+            username = newUsername;
+            const result = document.createElement('div');
+            result.className = 'command-output';
+            result.textContent = `Username set to ${username}`;
+            terminal.appendChild(result);
+          } else {
+            const result = document.createElement('div');
+            result.className = 'command-output error-message';
+            result.textContent = 'Incorrect password';
+            terminal.appendChild(result);
+          }
+          e.target.removeEventListener('keydown', onPasswordInput); // Remove this handler
+          e.target.readOnly = true;
+          createPrompt(false); // Create a new prompt
+        }
+      });
     };
 
     const focusTerminalInput = (event) => {
