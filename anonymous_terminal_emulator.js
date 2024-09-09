@@ -75,7 +75,7 @@
             return; // Early return after clearing the terminal
           } else if (command === 'dino') {
             response = commands[command];
-            window.location.href = '/dino'; // Redirect to /dino
+            window.location.assign('/dino'); // Redirect to /dino
             return; // Early return after redirecting
           } else {
             response = commands[command];
