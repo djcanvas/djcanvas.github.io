@@ -137,24 +137,3 @@ html, body {
     padding: 0 8px;
   }
 }
-.modern-button {
-            padding: 12px 24px;
-            font-family: 'Open Sans', sans-serif;
-            font-size: 16px;
-            color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        .modern-button:hover {
-            background-color: #1b1d23;
-        }
-        .modern-button:active {
-            transform: scale(0.98);
-        }
-        .modern-button:focus {
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.5);
-        }
