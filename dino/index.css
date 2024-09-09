@@ -137,15 +137,3 @@ html, body {
     padding: 0 8px;
   }
 }
-  .modern-button {
-       top: 10px;
-       display: grid;
-       place-content: center;
-       place-item:center;
-       position: relative;
-       margin: auto;
-       z-index: 10;
-       padding: 10px 20px;
-       font-family: 'Open Sans', sans-serif;
-       cursor: pointer;
-   }
