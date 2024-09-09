@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 // extract from chromium source code by @liuwayong
+    const CONFIG = {
+        DEFAULT_WIDTH: 600,
+        FPS: 60
+    };
 (function () {
     'use strict';
     /**
