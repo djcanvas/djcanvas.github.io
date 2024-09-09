@@ -12,7 +12,7 @@
           clear: '',
           dino: 'Redirecting to /dino...',
           insta: 'Redirecting to Instagram...',
-          user: 'Usage: user <username>'
+          user: 'Usage: user <username>',
         };
 
         const users = {
