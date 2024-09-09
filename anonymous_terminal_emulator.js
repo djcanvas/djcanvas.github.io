@@ -16,7 +16,7 @@
         };
 
         const users = {
-          'djcanvas': 'secretpassword'
+          'djcanvas': '12345678'
           // Add more predefined usernames and passwords here
         };
 
