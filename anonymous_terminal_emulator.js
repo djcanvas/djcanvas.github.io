@@ -17,8 +17,8 @@
       USER: 'Usage: user <username>',
     };
     const users = {
-      'djcanvas': '123456789',
-      // Add more predefined usernames and passwords here
+      'djcanvas': '314159265',
+      // Add more predefined usernames and passwords here 1312537856, 1584637547613, 138264751836548 ,178234612, 17823648, 0841398649, 917836478913, 78536864178, 314159265
     };
     let username = 'user'; // Initial hard-coded username
     let inputMode = 'command'; // Default mode is 'command'
