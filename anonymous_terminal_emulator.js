@@ -13,6 +13,7 @@
       CLEAR: '',
       DINO: 'Redirecting to /dino...',
       INSTA: 'Redirecting to Instagram...',
+      SPOTIFY: 'Redricting to Spotify...',
       USER: 'Usage: user <username>',
     };
     const users = {
@@ -101,6 +102,10 @@
           case 'insta':
             response = COMMANDS.INSTA;
             window.location.assign("https://instagram.com/davidschlenk_");
+            return;
+          case 'spotify':
+            response = COMMANDS.SPOTIFY;
+            window.location.assign("https://open.spotify.com/user/david.j.s-de?si=44dc05ec00f245c7");
             return;
           case 'user':
             if (commandLine.length === 2) {
