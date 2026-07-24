@@ -230,6 +230,11 @@
     };
 
     const focusTerminalInput = (event) => {
+      // While the hitster overlay is up it owns the keyboard; pulling focus
+      // back here would make its own inputs impossible to type into.
+      if (document.querySelector('.hitster-root')) {
+        return;
+      }
       const terminalInput = terminal.querySelector('.prompt input[type="text"]:not([readOnly])');
       if (terminalInput && (!event || !event.target.closest('#terminal'))) {
         terminalInput.focus();
