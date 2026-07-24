@@ -264,6 +264,10 @@
         card.tabIndex = 0;
         shell.appendChild(card);
 
+        // Placement stays provisional until the player locks it in, so they can
+        // move the card around and fill in the bonus guesses first.
+        let selectedSlot = null;
+
         const timeline = el('div', 'hitster-timeline');
         const renderTimeline = () => {
           timeline.innerHTML = '';
@@ -271,7 +275,11 @@
             const slot = el('button', 'hitster-slot');
             slot.dataset.index = String(index);
             slot.setAttribute('aria-label', `Place before position ${index + 1}`);
-            slot.addEventListener('click', () => resolveDrop(index));
+            if (selectedSlot === index) {
+              slot.classList.add('is-chosen');
+              slot.textContent = '?';
+            }
+            slot.addEventListener('click', () => choose(index));
             timeline.appendChild(slot);
           };
           addSlot(0);
@@ -286,7 +294,18 @@
         renderTimeline();
         shell.appendChild(timeline);
 
-        shell.appendChild(el('p', 'hitster-hint', 'Drag the card into a gap, or click a gap. Bonus guesses are optional.'));
+        const describeSlot = (index) => {
+          const before = index > 0 ? player.timeline[index - 1].year : null;
+          const after = index < player.timeline.length ? player.timeline[index].year : null;
+          if (before === null && after === null) return 'Placing as the first card';
+          if (before === null) return `Placing before ${after}`;
+          if (after === null) return `Placing after ${before}`;
+          return `Placing between ${before} and ${after}`;
+        };
+
+        const caption = el('p', 'hitster-hint',
+          'Drag the card into a gap, or click a gap. Nothing is revealed until you lock in.');
+        shell.appendChild(caption);
 
         const guesses = el('div', 'hitster-guesses');
         const titleInput = el('input', 'hitster-input');
@@ -300,12 +319,24 @@
         guesses.append(titleInput, artistInput);
         shell.appendChild(guesses);
 
-        enableDrag(card, timeline, resolveDrop);
-
-        function resolveDrop(index) {
-          if (busy) return;
+        const lockIn = el('button', 'hitster-primary', 'lock in');
+        lockIn.disabled = true;
+        lockIn.addEventListener('click', () => {
+          if (busy || selectedSlot === null) return;
           busy = true;
-          reveal(index, titleInput.value, artistInput.value);
+          reveal(selectedSlot, titleInput.value, artistInput.value);
+        });
+        shell.appendChild(lockIn);
+
+        enableDrag(card, timeline, choose);
+
+        /** Provisional placement: repeatable, and never reveals anything. */
+        function choose(index) {
+          if (busy) return;
+          selectedSlot = index;
+          renderTimeline(); // only the timeline, so the guess fields keep focus
+          caption.textContent = `${describeSlot(index)}. Press lock in to confirm.`;
+          lockIn.disabled = false;
         }
       };
 
