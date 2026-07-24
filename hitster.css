@@ -7,8 +7,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.82);
-  backdrop-filter: blur(4px);
+  /* No backdrop-filter here: blurring a live canvas costs a full-screen
+     re-blur every frame, and at 0.82 opacity it is barely visible anyway. */
+  background: rgba(0, 0, 0, 0.94);
   font-family: 'Roboto', sans-serif;
   color: #fff;
   padding: 2vmin;

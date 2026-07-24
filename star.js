@@ -113,12 +113,25 @@ function resize() {
 
 }
 
+// Rendering is a few hundred separate strokes per frame, so it is worth
+// stopping entirely while a full-screen overlay hides the canvas.
+let paused = false;
+
+window.Starfield = {
+  pause() { paused = true; },
+  resume() { paused = false; }
+};
+
 function step() {
 
-  context.clearRect( 0, 0, width, height );
+  if( !paused ) {
 
-  update();
-  render();
+    context.clearRect( 0, 0, width, height );
+
+    update();
+    render();
+
+  }
 
   requestAnimationFrame( step );
 
