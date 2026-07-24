@@ -81,7 +81,64 @@
       terminal.scrollTop = terminal.scrollHeight;
     };
 
+    const COMMAND_NAMES = Object.keys(COMMANDS).map((name) => name.toLowerCase()).sort();
+    const SUBCOMMANDS = { hitster: ['logout', 'setup'] };
+
+    const longestCommonPrefix = (values) =>
+      values.reduce((shared, value) => {
+        let i = 0;
+        while (i < shared.length && i < value.length && shared[i] === value[i]) i++;
+        return shared.slice(0, i);
+      });
+
+    /** Completions for the word under the cursor, plus the text before it. */
+    const completionsFor = (value) => {
+      const parts = value.split(' ');
+      const word = parts[parts.length - 1].toLowerCase();
+      if (parts.length === 1) {
+        return { head: '', options: COMMAND_NAMES.filter((c) => c.startsWith(word)) };
+      }
+      const subs = SUBCOMMANDS[parts[0].toLowerCase()];
+      if (subs && parts.length === 2) {
+        return {
+          head: `${parts[0]} `,
+          options: subs.filter((s) => s.startsWith(word)),
+        };
+      }
+      return { head: '', options: [] };
+    };
+
+    const completeInput = (input) => {
+      const { head, options } = completionsFor(input.value);
+      if (options.length === 0) {
+        return;
+      }
+      if (options.length === 1) {
+        input.value = `${head}${options[0]} `;
+        return;
+      }
+      const shared = longestCommonPrefix(options);
+      const typed = input.value.slice(head.length);
+      if (shared.length > typed.length) {
+        input.value = head + shared; // grow to the unambiguous part
+      } else {
+        // Ambiguous: list the candidates above the live prompt, shell style.
+        const listing = document.createElement('div');
+        listing.className = 'command-output';
+        listing.textContent = options.join('  ');
+        terminal.insertBefore(listing, input.parentNode);
+        terminal.scrollTop = terminal.scrollHeight;
+      }
+    };
+
     const handleInput = (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault(); // never let Tab move focus out of the prompt
+        if (inputMode === 'command') {
+          completeInput(e.target);
+        }
+        return;
+      }
       if (e.key === 'Enter') {
         const input = e.target;
         const inputValue = input.value.trim();
