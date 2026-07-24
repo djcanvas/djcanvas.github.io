@@ -15,7 +15,7 @@
       INSTA: 'Redirecting to Instagram...',
       SPOTIFY: 'Redricting to Spotify...',
       USER: 'Usage: user <username>',
-      HITSTER: 'Starting hitster...',
+      HITSTER: 'Opening hitster...',
     };
     // SHA-256 hashes of passwords (not plaintext). Note: this still isn't
     // real security — anyone can view-source, brute-force the hash offline,
@@ -34,7 +34,6 @@
     let username = 'user'; // Initial hard-coded username
     let inputMode = 'command'; // Default mode is 'command'
     let newUsername = ''; // Username to be checked in password mode
-    let hitsterGame = null; // Owns the input line while a game is running
 
     const detectBrowser = () => {
       const userAgent = navigator.userAgent;
@@ -90,8 +89,6 @@
           handleCommand(inputValue);
         } else if (inputMode === 'password') {
           handlePassword(inputValue);
-        } else if (inputMode === 'hitster' && hitsterGame) {
-          hitsterGame.handleInput(inputValue);
         }
         input.readOnly = true;
       }
@@ -177,23 +174,8 @@
       'Playback needs Spotify Premium; you log in on Spotify itself, not here.',
     ].join('\n');
 
-    /** Hands the input line to the game and takes it back when it ends. */
-    const launchHitsterGame = (rounds) => {
-      hitsterGame = window.Hitster.createGame({
-        print: displayMessage,
-        prompt: (placeholder) => createPrompt(false, placeholder),
-        onExit: () => {
-          hitsterGame = null;
-          inputMode = 'command';
-          createPrompt(false);
-        },
-      });
-      inputMode = 'hitster';
-      hitsterGame.start(rounds);
-    };
-
     const startHitster = (args) => {
-      if (!window.Hitster) {
+      if (!window.Hitster || !window.HitsterGui) {
         displayMessage('hitster failed to load.', true);
         createPrompt(false);
         return;
@@ -221,26 +203,20 @@
         createPrompt(false);
         return;
       }
-      if (!window.Hitster.hasToken()) {
-        displayMessage('Sending you to Spotify to log in...');
-        window.Hitster.beginAuth(sub); // navigates away; we resume on return
-        return;
-      }
-      launchHitsterGame(sub);
+      window.HitsterGui.open();
+      createPrompt(false);
     };
 
-    /** Finishes the OAuth round trip and resumes the game we were starting. */
+    /** Finishes the OAuth round trip and reopens the game we were starting. */
     const resumeHitsterAfterLogin = async () => {
       const result = await window.Hitster.completeAuthCallback();
-      const rounds = window.Hitster.consumePendingRounds();
+      const setup = window.Hitster.consumeSetup();
       if (!result.ok) {
         displayMessage(`Spotify login failed: ${result.error}`, true);
-        createPrompt(false);
         return;
       }
       displayMessage('Logged in to Spotify.');
-      terminal.lastChild.remove(); // drop the idle prompt the game replaces
-      launchHitsterGame(rounds);
+      window.HitsterGui.open(setup || undefined);
     };
 
     const displayMessage = (message, isError = false) => {
