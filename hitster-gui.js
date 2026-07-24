@@ -41,6 +41,7 @@
     open(setup) {
       const H = window.Hitster;
       const root = el('div', 'hitster-root');
+      root.tabIndex = -1; // focusable fallback when a screen has no controls
       document.body.appendChild(root);
 
       let players = [];
@@ -68,6 +69,20 @@
 
       // --- screens ----------------------------------------------------------
 
+      /**
+       * The terminal input still holds focus when the overlay opens, so the
+       * overlay has to take it, otherwise typing keeps going to the shell.
+       */
+      const takeFocus = (shell) => {
+        const active = document.activeElement;
+        if (active && active.blur && !root.contains(active)) active.blur();
+        const target =
+          shell.querySelector('.hitster-input') ||
+          shell.querySelector('.hitster-primary') ||
+          root;
+        if (target && target.focus) target.focus();
+      };
+
       const screen = (title) => {
         root.innerHTML = '';
         const shell = el('div', 'hitster-shell');
@@ -78,6 +93,9 @@
         head.appendChild(quit);
         shell.appendChild(head);
         root.appendChild(shell);
+        // Callers keep appending after this returns, so claim focus once the
+        // current synchronous render has finished.
+        setTimeout(() => takeFocus(shell), 0);
         return shell;
       };
 
