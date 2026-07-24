@@ -16,9 +16,19 @@
       SPOTIFY: 'Redricting to Spotify...',
       USER: 'Usage: user <username>',
     };
+    // SHA-256 hashes of passwords (not plaintext). Note: this still isn't
+    // real security — anyone can view-source, brute-force the hash offline,
+    // or bypass the check in devtools. It's a client-side novelty gate only.
     const users = {
-      'djcanvas': '314159265',
-      // Add more predefined usernames and passwords here 1312537856, 1584637547613, 138264751836548 ,178234612, 17823648, 0841398649, 917836478913, 78536864178, 314159265
+      'djcanvas': '9cbbdb5ef53b0f78a27194954065960491efcd03426c07960654e1f58cb72617',
+    };
+
+    const sha256Hex = async (text) => {
+      const data = new TextEncoder().encode(text);
+      const digest = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(digest))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
     };
     let username = 'user'; // Initial hard-coded username
     let inputMode = 'command'; // Default mode is 'command'
@@ -139,8 +149,9 @@
       createPrompt(false);
     };
 
-    const handlePassword = (password) => {
-      if (users[newUsername] === password) {
+    const handlePassword = async (password) => {
+      const hashed = await sha256Hex(password);
+      if (users[newUsername] === hashed) {
         username = newUsername;
         newUsername = ''; // Clear the temp username storage
         displayMessage(`Username set to ${username}`);
