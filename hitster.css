@@ -265,6 +265,24 @@
   outline: none;
 }
 
+/* The provisional placement, before the player locks it in. */
+.hitster-slot.is-chosen {
+  flex: 0 0 46px;
+  border-style: solid;
+  border-color: #fff540;
+  background: rgba(255, 245, 64, 0.14);
+  color: #fff540;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.hitster-primary:disabled {
+  background: #2a2d36;
+  border-color: #3a3f4b;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: not-allowed;
+}
+
 .hitster-guesses {
   display: flex;
   gap: 8px;
