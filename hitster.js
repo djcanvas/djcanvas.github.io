@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  // Source of truth for scoring. iTunes is only ever asked for the audio.
+  // Source of truth for scoring. Spotify is only ever asked for the audio.
   const SONGS = [
     { title: 'Hey Jude', artist: 'The Beatles', year: 1968 },
     { title: '(I Can\'t Get No) Satisfaction', artist: 'The Rolling Stones', year: 1965 },
@@ -124,13 +124,8 @@
     clientId: 'hitster.clientId',
     verifier: 'hitster.pkceVerifier',
     token: 'hitster.token',
-    pendingRounds: 'hitster.pendingRounds',
+    pendingSetup: 'hitster.pendingSetup',
   };
-
-  const DEFAULT_ROUNDS = 5;
-  const MAX_CONSECUTIVE_LOOKUP_FAILURES = 3;
-  const POINTS = { exactYear: 3, closeYear: 2, nearYear: 1, title: 2, artist: 2 };
-  const ROUND_MAX = POINTS.exactYear + POINTS.title + POINTS.artist;
 
   /** Fold to a shape that survives typos, casing, punctuation and umlauts. */
   const normalize = (value) =>
@@ -181,13 +176,6 @@
 
   const artistMatches = (guess, artist) =>
     artistVariants(artist).some((variant) => isCloseEnough(guess, variant));
-
-  const yearPoints = (distance) => {
-    if (distance === 0) return POINTS.exactYear;
-    if (distance <= 1) return POINTS.closeYear;
-    if (distance <= 3) return POINTS.nearYear;
-    return 0;
-  };
 
   const shuffle = (items) => {
     const copy = items.slice();
@@ -250,11 +238,10 @@
   };
 
   /** Sends the browser to Spotify's consent screen; the page unloads here. */
-  const beginAuth = async (rounds) => {
+  const beginAuth = async () => {
     const clientId = getClientId();
     const verifier = randomVerifier();
     sessionStorage.setItem(STORE.verifier, verifier);
-    localStorage.setItem(STORE.pendingRounds, String(rounds));
     const params = new URLSearchParams({
       client_id: clientId,
       response_type: 'code',
@@ -309,12 +296,6 @@
       localStorage.removeItem(STORE.token);
       return null;
     }
-  };
-
-  const consumePendingRounds = () => {
-    const value = localStorage.getItem(STORE.pendingRounds);
-    localStorage.removeItem(STORE.pendingRounds);
-    return value ? parseInt(value, 10) : null;
   };
 
   // --- Playback -------------------------------------------------------------
@@ -381,215 +362,39 @@
     }
   };
 
-  // --- Game -----------------------------------------------------------------
-
-  /**
-   * @param {object} io
-   * @param {(text: string, isError?: boolean) => void} io.print
-   * @param {(placeholder?: string) => void} io.prompt  shows a new input line
-   * @param {() => void} io.onExit  hands control back to the shell
-   */
-  const createGame = ({ print, prompt, onExit }) => {
-    let queue = [];
-    let round = 0;
-    let totalRounds = DEFAULT_ROUNDS;
-    let score = 0;
-    let stage = 'year'; // year -> title -> artist
-    let guesses = {};
-    let current = null;
-    let currentUri = null;
-    let playback = null;
-    let consecutiveFailures = 0;
-    let finished = false;
-
-    const teardown = () => {
-      if (playback) {
-        playback.player.pause().catch(() => {});
-        playback.player.disconnect();
-        playback = null;
-      }
-    };
-
-    const playCurrent = async () => {
-      if (!playback || !currentUri) return;
-      try {
-        const response = await api(`/me/player/play?device_id=${playback.deviceId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ uris: [currentUri] }),
-        });
-        if (!response.ok && response.status !== 204) {
-          print('Spotify refused to start playback. Type "replay" to retry.', true);
-        }
-      } catch (error) {
-        print(`Playback failed: ${error.message}`, true);
-      }
-    };
-
-    const stagePrompt = () => {
-      if (stage === 'year') prompt('Year?');
-      else if (stage === 'title') prompt('Title?');
-      else prompt('Artist?');
-    };
-
-    const finish = (message) => {
-      if (finished) return;
-      finished = true;
-      teardown();
-      if (message) print(message);
-      if (round > 0) {
-        const max = round * ROUND_MAX;
-        print(`Final score: ${score}/${max} (${Math.round((score / max) * 100)}%) over ${round} round(s).`);
-      }
-      onExit();
-    };
-
-    const nextRound = async () => {
-      if (round >= totalRounds || queue.length === 0) {
-        finish('That was the last track.');
-        return;
-      }
-
-      const song = queue.shift();
-      print('Loading track...');
-      const uri = await findTrackUri(song);
-      if (!uri) {
-        consecutiveFailures++;
-        if (consecutiveFailures >= MAX_CONSECUTIVE_LOOKUP_FAILURES) {
-          finish('Could not find tracks on Spotify. Giving up for now.');
-          return;
-        }
-        print('That track is not on Spotify here - drawing another.', true);
-        await nextRound();
-        return;
-      }
-
-      consecutiveFailures = 0;
-      current = song;
-      currentUri = uri;
-      round++;
-      guesses = {};
-      stage = 'year';
-
-      print(`--- Track ${round}/${totalRounds} --- (score ${score})`);
-      await playCurrent();
-      stagePrompt();
-    };
-
-    const reveal = async () => {
-      const yearGuess = parseInt(guesses.year, 10);
-      const distance = Number.isFinite(yearGuess) ? Math.abs(yearGuess - current.year) : Infinity;
-      const gotYear = Number.isFinite(distance) ? yearPoints(distance) : 0;
-      const gotTitle = isCloseEnough(guesses.title || '', current.title) ? POINTS.title : 0;
-      const gotArtist = artistMatches(guesses.artist || '', current.artist) ? POINTS.artist : 0;
-      const earned = gotYear + gotTitle + gotArtist;
-      score += earned;
-
-      if (playback) await playback.player.pause().catch(() => {});
-
-      print(
-        [
-          `>> ${current.title} - ${current.artist} (${current.year})`,
-          `   year   ${gotYear}/${POINTS.exactYear}  ` +
-            `(${Number.isFinite(distance) ? (distance === 0 ? 'spot on' : `off by ${distance}`) : 'no year given'})`,
-          `   title  ${gotTitle}/${POINTS.title}`,
-          `   artist ${gotArtist}/${POINTS.artist}`,
-          `   round  ${earned}/${ROUND_MAX}`,
-        ].join('\n')
-      );
-    };
-
-    const handleGuess = async (value) => {
-      guesses[stage] = value;
-      if (stage === 'year') {
-        stage = 'title';
-        stagePrompt();
-        return;
-      }
-      if (stage === 'title') {
-        stage = 'artist';
-        stagePrompt();
-        return;
-      }
-      await reveal();
-      await nextRound();
-    };
-
-    return {
-      start: async (requestedRounds) => {
-        queue = shuffle(SONGS);
-        totalRounds = Math.min(Math.max(parseInt(requestedRounds, 10) || DEFAULT_ROUNDS, 1), queue.length);
-        print(
-          [
-            'HITSTER - guess the year, the title and the artist.',
-            `${totalRounds} tracks, up to ${ROUND_MAX} points each ` +
-              `(year ${POINTS.exactYear} / title ${POINTS.title} / artist ${POINTS.artist}).`,
-            'Exact year scores 3, within 1 year scores 2, within 3 years scores 1.',
-            'In-game commands: replay, skip, quit.',
-            'Connecting to Spotify...',
-          ].join('\n')
-        );
-        try {
-          playback = await createPlayer((event, message) => {
-            if (event === 'account_error') {
-              finish('Spotify says this account is not Premium - the Web Playback SDK needs Premium.');
-            } else if (event === 'authentication_error') {
-              localStorage.removeItem(STORE.token);
-              finish(`Spotify auth failed (${message}). Run "hitster" again to log in.`);
-            } else {
-              print(`Spotify ${event.replace('_', ' ')}: ${message}`, true);
-            }
-          });
-        } catch (error) {
-          finish(`Could not start the Spotify player: ${error.message}`);
-          return;
-        }
-        if (finished) return;
-        await nextRound();
-      },
-
-      /** Called by the shell for every line typed while the game owns input. */
-      handleInput: async (rawValue) => {
-        if (finished) return;
-        const value = rawValue.trim();
-        const command = value.toLowerCase();
-
-        if (command === 'quit' || command === 'stop' || command === 'exit') {
-          finish('Stopped.');
-          return;
-        }
-        if (command === 'replay') {
-          await playCurrent();
-          stagePrompt();
-          return;
-        }
-        if (command === 'skip') {
-          print(`>> skipped: ${current.title} - ${current.artist} (${current.year})`);
-          await nextRound();
-          return;
-        }
-        if (command === 'help') {
-          print('Answer the prompt, or type: replay, skip, quit.');
-          stagePrompt();
-          return;
-        }
-        await handleGuess(value);
-      },
-    };
-  };
+  // --- Public surface -------------------------------------------------------
 
   window.Hitster = {
-    createGame,
+    SONGS,
+    // audio
+    createPlayer,
+    findTrackUri,
+    api,
+    // answer matching
+    isCloseEnough,
+    artistMatches,
+    shuffle,
+    // auth
     getClientId,
     setClientId,
+    beginAuth,
     isAuthCallback,
     completeAuthCallback,
-    consumePendingRounds,
-    beginAuth,
     hasToken: () => Boolean(readToken()),
     logout: () => {
       localStorage.removeItem(STORE.token);
-      localStorage.removeItem(STORE.pendingRounds);
+      localStorage.removeItem(STORE.pendingSetup);
+    },
+    /** Setup config parked across the OAuth redirect. */
+    stashSetup: (setup) => localStorage.setItem(STORE.pendingSetup, JSON.stringify(setup)),
+    consumeSetup: () => {
+      const raw = localStorage.getItem(STORE.pendingSetup);
+      localStorage.removeItem(STORE.pendingSetup);
+      try {
+        return raw ? JSON.parse(raw) : null;
+      } catch (error) {
+        return null;
+      }
     },
   };
 })();
