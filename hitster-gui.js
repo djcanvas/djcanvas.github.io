@@ -43,6 +43,9 @@
       const root = el('div', 'hitster-root');
       root.tabIndex = -1; // focusable fallback when a screen has no controls
       document.body.appendChild(root);
+      // The starfield is completely hidden behind the overlay; leaving it
+      // running costs a few hundred canvas strokes per frame for nothing.
+      if (window.Starfield) window.Starfield.pause();
 
       let players = [];
       let winCards = WIN_CARDS_DEFAULT;
@@ -60,6 +63,7 @@
         }
         root.remove();
         document.removeEventListener('keydown', onKey);
+        if (window.Starfield) window.Starfield.resume();
       };
 
       const onKey = (e) => {
@@ -340,46 +344,93 @@
         }
       };
 
-      /** Pointer-based dragging so mouse and touch both work. */
+      /**
+       * Pointer-based dragging so mouse and touch both work.
+       *
+       * Slot positions are measured once per drag rather than per move:
+       * getBoundingClientRect forces a layout, and pointermove fires far more
+       * often than the display refreshes. Painting is likewise coalesced into
+       * one animation frame per frame.
+       */
       const enableDrag = (card, timeline, onDrop) => {
         let dragging = false;
-        const slots = () => Array.from(timeline.querySelectorAll('.hitster-slot'));
+        let start = { x: 0, y: 0 };
+        let targets = []; // {slot, rect}, valid for the duration of one drag
+        let hot = null;
+        let frame = 0;
+        let latest = null;
 
-        const slotAt = (x, y) =>
-          slots().find((slot) => {
-            const r = slot.getBoundingClientRect();
-            const pad = 18; // generous target, the gaps are thin
-            return x >= r.left - pad && x <= r.right + pad && y >= r.top - pad && y <= r.bottom + pad;
-          });
+        const measure = () => {
+          targets = Array.from(timeline.querySelectorAll('.hitster-slot')).map((slot) => ({
+            slot,
+            rect: slot.getBoundingClientRect(),
+          }));
+        };
+
+        const slotAt = (x, y) => {
+          const pad = 18; // generous target, the gaps are thin
+          const found = targets.find(
+            ({ rect }) =>
+              x >= rect.left - pad && x <= rect.right + pad &&
+              y >= rect.top - pad && y <= rect.bottom + pad
+          );
+          return found ? found.slot : null;
+        };
+
+        const setHot = (slot) => {
+          if (slot === hot) return; // only touch the DOM when it actually changes
+          if (hot) hot.classList.remove('is-hot');
+          if (slot) slot.classList.add('is-hot');
+          hot = slot;
+        };
+
+        const paint = () => {
+          frame = 0;
+          if (!dragging || !latest) return;
+          card.style.transform = `translate(${latest.x - start.x}px, ${latest.y - start.y}px)`;
+          setHot(slotAt(latest.x, latest.y));
+        };
 
         const move = (e) => {
           if (!dragging) return;
-          card.style.transform = `translate(${e.clientX - start.x}px, ${e.clientY - start.y}px)`;
-          slots().forEach((s) => s.classList.remove('is-hot'));
-          const hit = slotAt(e.clientX, e.clientY);
-          if (hit) hit.classList.add('is-hot');
+          latest = { x: e.clientX, y: e.clientY };
+          if (!frame) frame = requestAnimationFrame(paint);
         };
+
+        // A horizontal scroll mid-drag would invalidate the cached rects.
+        const remeasure = () => dragging && measure();
 
         const up = (e) => {
           if (!dragging) return;
           dragging = false;
+          if (frame) {
+            cancelAnimationFrame(frame);
+            frame = 0;
+          }
           card.classList.remove('is-dragging');
           card.style.transform = '';
           document.removeEventListener('pointermove', move);
           document.removeEventListener('pointerup', up);
+          timeline.removeEventListener('scroll', remeasure);
           const hit = slotAt(e.clientX, e.clientY);
-          slots().forEach((s) => s.classList.remove('is-hot'));
+          setHot(null);
           if (hit) onDrop(parseInt(hit.dataset.index, 10));
         };
 
-        let start = { x: 0, y: 0 };
         card.addEventListener('pointerdown', (e) => {
           dragging = true;
           start = { x: e.clientX, y: e.clientY };
+          latest = null;
+          measure();
           card.classList.add('is-dragging');
-          card.setPointerCapture && card.releasePointerCapture(e.pointerId);
+          // Touch pointers are implicitly captured by the card; releasing lets
+          // the document-level listeners below see the rest of the drag.
+          if (card.hasPointerCapture && card.hasPointerCapture(e.pointerId)) {
+            card.releasePointerCapture(e.pointerId);
+          }
           document.addEventListener('pointermove', move);
           document.addEventListener('pointerup', up);
+          timeline.addEventListener('scroll', remeasure);
         });
 
         // Keyboard fallback: the slots are real buttons, so tabbing works too.
