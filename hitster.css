@@ -145,6 +145,12 @@
   color: #ff5555;
 }
 
+/* Practice mode keeps one status line around and empties it; without this the
+   flex gap still reserves a slot for it. */
+.hitster-status:empty {
+  display: none;
+}
+
 /* --- scoreboard --- */
 
 .hitster-scorebar,

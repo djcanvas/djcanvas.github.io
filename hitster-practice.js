@@ -47,10 +47,13 @@
   // value -> predicate. Kept next to the option list so both stay in sync.
   const ERAS = {
     all: () => true,
+    s1950: (song) => song.year >= 1950,
+    s1970: (song) => song.year >= 1970,
     s1980: (song) => song.year >= 1980,
     s1990: (song) => song.year >= 1990,
     s2000: (song) => song.year >= 2000,
     s2010: (song) => song.year >= 2010,
+    b1980: (song) => song.year < 1980,
     b1990: (song) => song.year < 1990,
     b2000: (song) => song.year < 2000,
   };
@@ -60,11 +63,14 @@
     clip: [[0, 'play the whole track'], [5, '5 seconds'], [10, '10 seconds'], [15, '15 seconds'], [30, '30 seconds']],
     start: [['begin', 'start of the track'], ['random', 'random spot (harder)']],
     era: [
-      ['all', 'everything'],
+      ['all', 'everything (1908-2021)'],
+      ['s1950', '1950 and later'],
+      ['s1970', '1970 and later'],
       ['s1980', '1980 and later'],
       ['s1990', '1990 and later'],
       ['s2000', '2000 and later'],
       ['s2010', '2010 and later'],
+      ['b1980', 'before 1980'],
       ['b1990', 'before 1990'],
       ['b2000', 'before 2000'],
     ],
