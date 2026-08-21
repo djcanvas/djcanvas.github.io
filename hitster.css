@@ -83,6 +83,12 @@
   gap: 12px;
 }
 
+/* A display rule outranks the hidden attribute, and practice mode toggles the
+   guess and reveal panels with it. */
+.hitster-root [hidden] {
+  display: none;
+}
+
 .hitster-players {
   display: flex;
   flex-direction: column;
@@ -315,5 +321,281 @@
 
   .hitster-card-year {
     font-size: 1.2rem;
+  }
+}
+
+/* --- practice mode --- */
+
+.hitster-mini:disabled,
+.hitster-quit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: #333;
+}
+
+.hitster-stage {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  border: 1px solid #2a2d36;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1f222b, #15171d);
+  padding: 16px 18px;
+}
+
+.hitster-disc {
+  flex: 0 0 auto;
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  background: conic-gradient(#2b3444, #3a4557, #242c3a, #2b3444);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hitster-disc::after {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #4caf50;
+  box-shadow: inset 0 0 0 5px #1b1d23;
+}
+
+/* Only spins while audio is actually running, so it doubles as a play light. */
+.hitster-disc.is-spinning {
+  animation: hitster-spin 3s linear infinite;
+}
+
+@keyframes hitster-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hitster-transport {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hitster-transport .hitster-primary {
+  align-self: flex-start;
+}
+
+.hitster-bar {
+  height: 6px;
+  border-radius: 99px;
+  background: #12141a;
+  overflow: hidden;
+}
+
+.hitster-bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #4caf50, #fff540);
+  transition: width 0.2s linear;
+}
+
+.hitster-fields {
+  display: grid;
+  grid-template-columns: 120px 1fr 1fr;
+  gap: 12px;
+}
+
+.hitster-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.hitster-field > span {
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.hitster-field.is-off {
+  opacity: 0.35;
+}
+
+.hitster-actions {
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.hitster-checks {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  padding-top: 6px;
+}
+
+.hitster-checks label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hitster-checks input {
+  accent-color: #4caf50;
+}
+
+/* --- practice result --- */
+
+.hitster-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hitster-line {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: #171921;
+  border-left: 4px solid #3a3f4b;
+}
+
+.hitster-line.is-good {
+  border-left-color: #4caf50;
+}
+
+.hitster-line.is-near {
+  border-left-color: #fff540;
+}
+
+.hitster-line.is-bad {
+  border-left-color: #ff5555;
+}
+
+.hitster-line-key {
+  flex: 0 0 66px;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  padding-top: 3px;
+}
+
+.hitster-line-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.hitster-line-answer {
+  font-weight: 500;
+}
+
+.hitster-line-guess {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.hitster-line-mark {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.6);
+  padding-top: 3px;
+}
+
+.hitster-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+}
+
+.hitster-links a {
+  /* styles.css pins every bare <a> to the bottom right for the site logo. */
+  position: static;
+  color: #4caf50;
+  text-decoration: none;
+  border-bottom: 1px dotted;
+}
+
+.hitster-links a:hover {
+  color: #fff540;
+}
+
+/* --- practice stats --- */
+
+.hitster-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+
+.hitster-tiles div {
+  border: 1px solid #333;
+  border-radius: 6px;
+  background: #171921;
+  padding: 9px 6px;
+}
+
+.hitster-tiles b {
+  display: block;
+  font-size: 1.25rem;
+  color: #4caf50;
+}
+
+.hitster-tiles small {
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.hitster-tally {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hitster-settings {
+  border: 1px solid #2a2d36;
+  border-radius: 6px;
+  padding: 0 14px;
+}
+
+.hitster-settings summary {
+  cursor: pointer;
+  padding: 10px 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.hitster-setgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 4px 0 16px;
+}
+
+@media (max-width: 560px) {
+  .hitster-fields,
+  .hitster-setgrid {
+    grid-template-columns: 1fr;
+  }
+
+  .hitster-tiles {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

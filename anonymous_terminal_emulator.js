@@ -15,7 +15,7 @@
       INSTA: 'Redirecting to Instagram...',
       SPOTIFY: 'Redricting to Spotify...',
       USER: 'Usage: user <username>',
-      HITSTER: 'Opening hitster...',
+      HITSTER: 'Opening hitster... ("hitster practice" drills the deck solo)',
     };
     // SHA-256 hashes of passwords (not plaintext). Note: this still isn't
     // real security — anyone can view-source, brute-force the hash offline,
@@ -82,7 +82,7 @@
     };
 
     const COMMAND_NAMES = Object.keys(COMMANDS).map((name) => name.toLowerCase()).sort();
-    const SUBCOMMANDS = { hitster: ['logout', 'setup'] };
+    const SUBCOMMANDS = { hitster: ['logout', 'practice', 'setup'] };
 
     const longestCommonPrefix = (values) =>
       values.reduce((shared, value) => {
@@ -232,7 +232,7 @@
     ].join('\n');
 
     const startHitster = (args) => {
-      if (!window.Hitster || !window.HitsterGui) {
+      if (!window.Hitster || !window.HitsterGui || !window.HitsterPractice) {
         displayMessage('hitster failed to load.', true);
         createPrompt(false);
         return;
@@ -260,7 +260,11 @@
         createPrompt(false);
         return;
       }
-      window.HitsterGui.open();
+      if (sub === 'practice') {
+        window.HitsterPractice.open();
+      } else {
+        window.HitsterGui.open();
+      }
       createPrompt(false);
     };
 
@@ -273,7 +277,11 @@
         return;
       }
       displayMessage('Logged in to Spotify.');
-      window.HitsterGui.open(setup || undefined);
+      if (setup && setup.mode === 'practice') {
+        window.HitsterPractice.open();
+      } else {
+        window.HitsterGui.open(setup || undefined);
+      }
     };
 
     const displayMessage = (message, isError = false) => {
