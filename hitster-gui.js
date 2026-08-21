@@ -144,6 +144,14 @@
         form.appendChild(goalWrap);
 
         const start = el('button', 'hitster-primary', 'start game');
+        // Solo drill on the same deck, for learning the years without an
+        // opponent. It replaces this overlay rather than nesting inside it.
+        const practice = el('button', 'hitster-mini hitster-add', 'practice solo instead');
+        practice.addEventListener('click', () => {
+          if (!window.HitsterPractice) return;
+          close();
+          window.HitsterPractice.open();
+        });
         const status = el('p', 'hitster-status');
         start.addEventListener('click', async () => {
           const names = Array.from(list.querySelectorAll('input'))
@@ -164,7 +172,7 @@
           }
           await begin(names, winCards, status);
         });
-        form.append(start, status);
+        form.append(start, practice, status);
         shell.appendChild(form);
       };
 

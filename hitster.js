@@ -156,14 +156,27 @@
     return prev[b.length];
   };
 
-  /** Typo tolerance scaled to the length of the expected answer. */
-  const isCloseEnough = (guess, answer) => {
+  /**
+   * Typo tolerance scaled to the length of the expected answer. Practice mode
+   * lets the player pick how forgiving that is; the game itself stays on
+   * 'normal', which is what the numbers below were tuned for.
+   */
+  const TOLERANCE = {
+    strict: () => 0,
+    normal: (len) => (len >= 12 ? 3 : len >= 8 ? 2 : len >= 5 ? 1 : 0),
+    loose: (len) => (len >= 12 ? 5 : len >= 8 ? 3 : len >= 5 ? 2 : 1),
+  };
+
+  const isCloseEnough = (guess, answer, mode) => {
     const g = normalize(guess);
     const a = normalize(answer);
     if (!g || !a) return false;
     if (g === a) return true;
-    const tolerance = a.length >= 12 ? 3 : a.length >= 8 ? 2 : a.length >= 5 ? 1 : 0;
-    return levenshtein(g, a) <= tolerance;
+    // Half an answer counts when the player asked for a forgiving check, so
+    // "bohemian" passes for "Bohemian Rhapsody".
+    if (mode === 'loose' && g.length >= 5 && (a.includes(g) || g.includes(a))) return true;
+    const scale = TOLERANCE[mode] || TOLERANCE.normal;
+    return levenshtein(g, a) <= scale(a.length);
   };
 
   /** "Mark Ronson feat. Bruno Mars" also accepts just "Mark Ronson". */
@@ -174,8 +187,8 @@
       .filter(Boolean)
       .concat(artist);
 
-  const artistMatches = (guess, artist) =>
-    artistVariants(artist).some((variant) => isCloseEnough(guess, variant));
+  const artistMatches = (guess, artist, mode) =>
+    artistVariants(artist).some((variant) => isCloseEnough(guess, variant, mode));
 
   const shuffle = (items) => {
     const copy = items.slice();
@@ -346,8 +359,12 @@
     });
   };
 
-  /** Resolves a curated entry to a Spotify track uri, or null if unmatched. */
-  const findTrackUri = async (song) => {
+  /**
+   * Resolves a curated entry to a playable Spotify track, or null if the
+   * catalogue here has no match. The duration comes along because practice
+   * mode needs it to pick a random starting point inside the track.
+   */
+  const findTrack = async (song) => {
     const query = encodeURIComponent(`track:${song.title} artist:${song.artist}`);
     try {
       const response = await api(`/search?q=${query}&type=track&limit=8`);
@@ -356,10 +373,15 @@
       const hit = items.find((track) =>
         (track.artists || []).some((a) => artistMatches(a.name, song.artist))
       );
-      return hit ? hit.uri : null;
+      return hit ? { uri: hit.uri, durationMs: hit.duration_ms || 0 } : null;
     } catch (error) {
       return null;
     }
+  };
+
+  const findTrackUri = async (song) => {
+    const track = await findTrack(song);
+    return track ? track.uri : null;
   };
 
   // --- Public surface -------------------------------------------------------
@@ -368,6 +390,7 @@
     SONGS,
     // audio
     createPlayer,
+    findTrack,
     findTrackUri,
     api,
     // answer matching
