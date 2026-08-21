@@ -18,7 +18,7 @@
   // Source of truth for scoring. Spotify is only ever asked for the audio.
   const SONGS = [
     { title: 'Rigoletto: "La Donna E\' Mobile"', artist: 'Enrico Caruso', year: 1908 },
-    { title: 'Guajira Guantanamera', artist: 'Joseito Fernandez', year: 1929 },
+    { title: 'Guajira Guantanamera', artist: 'Joseito Fernández', year: 1929 },
     { title: 'In the Mood', artist: 'Glenn Miller', year: 1939 },
     { title: 'Pack die Badehose ein', artist: 'Cornelia Froboess', year: 1951 },
     { title: 'That\'s Amore', artist: 'Dean Martin', year: 1953 },
@@ -211,7 +211,7 @@
     { title: 'Return of the Mack', artist: 'Mark Morrison', year: 1996 },
     { title: 'Don\'t Speak', artist: 'No Doubt', year: 1996 },
     { title: 'Barbie Girl', artist: 'Aqua', year: 1997 },
-    { title: 'My Heart Will Go On', artist: 'Celine Dion', year: 1997 },
+    { title: 'My Heart Will Go On', artist: 'Céline Dion', year: 1997 },
     { title: 'Save Tonight', artist: 'Eagle-Eye Cherry', year: 1997 },
     { title: 'Torn', artist: 'Natalie Imbruglia', year: 1997 },
     { title: 'Engel', artist: 'Rammstein', year: 1997 },
@@ -260,7 +260,7 @@
     { title: 'Because of You', artist: 'Kelly Clarkson', year: 2005 },
     { title: 'Durch den Monsun', artist: 'Tokio Hotel', year: 2005 },
     { title: 'Rehab', artist: 'Amy Winehouse', year: 2006 },
-    { title: 'World Hold on', artist: 'Bob Sinclair', year: 2006 },
+    { title: 'World Hold on', artist: 'Bob Sinclar', year: 2006 },
     { title: 'Put Your Records On', artist: 'Corinne Bailey Rae', year: 2006 },
     { title: 'Das Beste', artist: 'Silbermond', year: 2006 },
     { title: 'No One', artist: 'Alicia Keys', year: 2007 },
@@ -327,6 +327,9 @@
     { title: 'Die guten Zeiten', artist: 'Wincent Weiss, Johannes Oerding', year: 2021 },
   ];
 
+  // The playlist the deck above was taken from, so it can be checked against.
+  const PLAYLIST_ID = '26zIHVncgI9HmHlgYWwnDi'; // HITSTER - Deutsch
+
   const AUTH_HOST = 'https://accounts.spotify.com';
   const API_HOST = 'https://api.spotify.com/v1';
   const SDK_SRC = 'https://sdk.scdn.co/spotify-player.js';
@@ -346,6 +349,13 @@
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase()
       .replace(/\(.*?\)|\[.*?\]/g, ' ') // "(Remastered)", "[Live]" ...
+      // Spotify hangs qualifiers off a dash: "Wonderwall - Remastered 2011".
+      // Only drop the tail when it actually reads as one, so real titles like
+      // "Lady - Hear Me Tonight" survive.
+      .replace(
+        /\s+-\s+[^-]*\b(remaster|remastered|mono|stereo|live|version|edit|mix|anniversary|deluxe|bonus|from|soundtrack|theme|recording|original|neuaufnahme|single|instrumental|acoustic|unplugged|demo)\b.*$/i,
+        ' '
+      )
       .replace(/&/g, ' and ')
       .replace(/[^a-z0-9\s]/g, ' ')
       .replace(/\s+/g, ' ')
@@ -399,8 +409,17 @@
       .filter(Boolean)
       .concat(artist);
 
-  const artistMatches = (guess, artist, mode) =>
-    artistVariants(artist).some((variant) => isCloseEnough(guess, variant, mode));
+  /**
+   * Naming any one of the credited artists is enough, from either side: the
+   * answer may read "Robin Thicke feat. T.I. & Pharrell Williams" while the
+   * player (or Spotify) writes "Robin Thicke, T.I., Pharrell Williams".
+   */
+  const artistMatches = (guess, artist, mode) => {
+    const wanted = artistVariants(artist);
+    return artistVariants(guess).some((given) =>
+      wanted.some((variant) => isCloseEnough(given, variant, mode))
+    );
+  };
 
   const shuffle = (items) => {
     const copy = items.slice();
@@ -648,6 +667,59 @@
     return track ? track.uri : null;
   };
 
+  // --- Deck verification ----------------------------------------------------
+
+  /** Reads the official playlist, paging until Spotify runs out of items. */
+  const fetchPlaylist = async (playlistId = PLAYLIST_ID) => {
+    const tracks = [];
+    let path = `/playlists/${playlistId}/tracks?limit=100&fields=next,items(track(name,artists(name)))`;
+    while (path) {
+      const response = await api(path);
+      if (!response.ok) throw new Error(`playlist request failed (${response.status})`);
+      const page = await response.json();
+      (page.items || []).forEach((item) => {
+        const track = item && item.track;
+        if (!track || !track.name) return; // unavailable or removed entries
+        tracks.push({
+          title: track.name,
+          artist: (track.artists || []).map((a) => a.name).join(', '),
+        });
+      });
+      path = page.next ? page.next.replace(API_HOST, '') : null;
+    }
+    return tracks;
+  };
+
+  /**
+   * Checks the curated deck against the playlist it came from.
+   *
+   * Only titles and artists can be checked this way. The years cannot: they
+   * are the years printed on the Hitster cards, and Spotify does not carry
+   * them - which is the whole reason the table above is maintained by hand.
+   */
+  const verifyDeck = async (playlistId) => {
+    const playlist = await fetchPlaylist(playlistId);
+    const deck = SONGS.map((song) => ({ song, found: false }));
+    const missing = [];
+    playlist.forEach((track) => {
+      const hit = deck.find(
+        (entry) =>
+          !entry.found &&
+          isCloseEnough(track.title, entry.song.title) &&
+          artistMatches(track.artist, entry.song.artist)
+      );
+      if (hit) hit.found = true;
+      else missing.push(track);
+    });
+    return {
+      playlistSize: playlist.length,
+      deckSize: SONGS.length,
+      matched: deck.filter((entry) => entry.found).length,
+      missing, // in the playlist, not in the deck
+      extra: deck.filter((entry) => !entry.found).map((entry) => entry.song),
+    };
+  };
+
   // --- Public surface -------------------------------------------------------
 
   window.Hitster = {
@@ -657,6 +729,8 @@
     playTrack,
     findTrack,
     findTrackUri,
+    fetchPlaylist,
+    verifyDeck,
     api,
     // answer matching
     isCloseEnough,
