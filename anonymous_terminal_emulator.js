@@ -82,7 +82,7 @@
     };
 
     const COMMAND_NAMES = Object.keys(COMMANDS).map((name) => name.toLowerCase()).sort();
-    const SUBCOMMANDS = { hitster: ['logout', 'practice', 'setup'] };
+    const SUBCOMMANDS = { hitster: ['logout', 'practice', 'setup', 'verify'] };
 
     const longestCommonPrefix = (values) =>
       values.reduce((shared, value) => {
@@ -255,6 +255,10 @@
         createPrompt(false);
         return;
       }
+      if (sub === 'verify') {
+        verifyDeck();
+        return; // the prompt comes back once Spotify has answered
+      }
       if (!window.Hitster.getClientId()) {
         displayMessage(SPOTIFY_SETUP_HELP, true);
         createPrompt(false);
@@ -264,6 +268,42 @@
         window.HitsterPractice.open();
       } else {
         window.HitsterGui.open();
+      }
+      createPrompt(false);
+    };
+
+    /**
+     * Checks the built-in deck against the Spotify playlist it was taken from.
+     * Runs here rather than at build time because reading the playlist needs a
+     * logged-in token.
+     */
+    const verifyDeck = async () => {
+      if (!window.Hitster.hasToken()) {
+        displayMessage('Not logged in to Spotify yet. Run "hitster" once and log in, then try again.', true);
+        createPrompt(false);
+        return;
+      }
+      displayMessage('Reading the official playlist from Spotify...');
+      try {
+        const result = await window.Hitster.verifyDeck();
+        const lines = [
+          `playlist: ${result.playlistSize} tracks | deck: ${result.deckSize} songs | matched: ${result.matched}`,
+        ];
+        if (result.missing.length) {
+          lines.push(`in the playlist but missing from the deck (${result.missing.length}):`);
+          result.missing.forEach((t) => lines.push(`  - ${t.artist} - ${t.title}`));
+        }
+        if (result.extra.length) {
+          lines.push(`in the deck but not found in the playlist (${result.extra.length}):`);
+          result.extra.forEach((s) => lines.push(`  - ${s.artist} - ${s.title} (${s.year})`));
+        }
+        if (!result.missing.length && !result.extra.length) {
+          lines.push('every track lines up. Years are not checked: they come from the');
+          lines.push('Hitster cards and Spotify does not carry them.');
+        }
+        displayMessage(lines.join('\n'), Boolean(result.missing.length || result.extra.length));
+      } catch (error) {
+        displayMessage(`Could not read the playlist: ${error.message}`, true);
       }
       createPrompt(false);
     };

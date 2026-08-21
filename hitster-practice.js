@@ -644,6 +644,19 @@
           close();
           return;
         }
+        // Tab belongs to the three guess fields: once you are in them it
+        // cycles between the ones being asked for and never leaves.
+        if (event.key === 'Tab') {
+          const want = asked();
+          const order = ['year', 'artist', 'title'].filter((name) => want[name]);
+          const at = order.indexOf((document.activeElement.dataset || {}).el);
+          if (at !== -1) {
+            event.preventDefault();
+            const step = event.shiftKey ? -1 : 1;
+            fields[order[(at + step + order.length) % order.length]].focus();
+          }
+          return;
+        }
         const typing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
         if (event.key === 'Enter') {
           if (revealed) {
