@@ -19,13 +19,24 @@ let velocity = { x: 0, y: 0, tx: 0, ty: 0, z: 0.005 };
 
 let touchInput = false;
 
+// Rendering is a few hundred separate strokes per frame, so it is worth
+// stopping entirely while a full-screen overlay hides the canvas. This has to
+// be initialised before the step() below: functions hoist, `let` does not, and
+// the first frame reads it.
+let paused = false;
+
+window.Starfield = {
+  pause() { paused = true; },
+  resume() { paused = false; }
+};
+
 generate();
 resize();
 step();
 
 window.onresize = resize;
-canvas.onmousemove = onMouseMove;
-canvas.ontouchmove = onTouchMove;
+// The pointer parallax (onMouseMove / onTouchMove) is commented out further
+// down, so nothing is wired to those events any more.
 canvas.ontouchend = onMouseLeave;
 document.onmouseleave = onMouseLeave;
 
@@ -112,15 +123,6 @@ function resize() {
   stars.forEach( placeStar );
 
 }
-
-// Rendering is a few hundred separate strokes per frame, so it is worth
-// stopping entirely while a full-screen overlay hides the canvas.
-let paused = false;
-
-window.Starfield = {
-  pause() { paused = true; },
-  resume() { paused = false; }
-};
 
 function step() {
 
