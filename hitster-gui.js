@@ -219,11 +219,7 @@
       const playMystery = async () => {
         if (!playback || !mystery || !mystery.uri) return;
         try {
-          await H.api(`/me/player/play?device_id=${playback.deviceId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uris: [mystery.uri] }),
-          });
+          await H.playTrack(playback.deviceId, mystery.uri);
         } catch (error) {
           /* the replay button on the turn screen covers a failed start */
         }
