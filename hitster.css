@@ -386,6 +386,22 @@
   align-self: flex-start;
 }
 
+.hitster-volume {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.hitster-volume input[type='range'] {
+  flex: 0 1 160px;
+  accent-color: #4caf50;
+  cursor: pointer;
+}
+
 .hitster-bar {
   height: 6px;
   border-radius: 99px;

@@ -347,7 +347,59 @@
       });
       setTimeout(() => reject(new Error('the Spotify player timed out')), 15000);
     });
-    return { player, deviceId };
+    // The SDK reconnects on its own (sleep, network blip, token refresh) and
+    // announces a brand new device id when it does. Playing to the id we were
+    // first handed would 404 from then on, so keep the handle up to date.
+    const handle = { player, deviceId };
+    player.addListener('ready', ({ device_id }) => {
+      handle.deviceId = device_id;
+    });
+    return handle;
+  };
+
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  /** Hands playback to our own device, so the play call has somewhere to go. */
+  const transferTo = (deviceId) =>
+    api('/me/player', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ device_ids: [deviceId], play: false }),
+    });
+
+  /**
+   * Starts one track on our device.
+   *
+   * Spotify answers 404 ("Device not found") while its backend has not caught
+   * up with the device the SDK just announced, which it routinely has not in
+   * the second after 'ready'. That is a wait-and-retry, not a real failure, so
+   * nudge it with a transfer and try again before giving up.
+   */
+  const playTrack = async (deviceId, uri, positionMs = 0) => {
+    const request = {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uris: [uri], position_ms: positionMs || 0 }),
+    };
+    let last = 0;
+    for (let attempt = 0; attempt < 4; attempt++) {
+      const response = await api(`/me/player/play?device_id=${deviceId}`, request);
+      if (response.ok) return;
+      last = response.status;
+      if (last !== 404 && last !== 202) break; // 202: accepted, not ready yet
+      await transferTo(deviceId).catch(() => {});
+      await wait(400 * (attempt + 1));
+    }
+    if (last === 404) {
+      throw new Error('Spotify never picked up this browser as a playback device');
+    }
+    if (last === 403) {
+      throw new Error('Spotify rejected playback (a Premium account is required)');
+    }
+    if (last === 401) {
+      throw new Error('the Spotify session expired');
+    }
+    throw new Error(`Spotify refused to play (${last})`);
   };
 
   const api = async (path, options = {}) => {
@@ -390,6 +442,7 @@
     SONGS,
     // audio
     createPlayer,
+    playTrack,
     findTrack,
     findTrackUri,
     api,

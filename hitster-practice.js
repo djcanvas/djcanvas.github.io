@@ -25,6 +25,7 @@
     start: 'begin', // 'begin' | 'random'
     era: 'all',
     strict: 'normal', // spelling tolerance, see Hitster.isCloseEnough
+    volume: 70, // percent
     askYear: true,
     askArtist: true,
     askTitle: true,
@@ -69,6 +70,8 @@
     ],
     strict: [['loose', 'forgiving (typos fine)'], ['normal', 'normal'], ['strict', 'strict']],
   };
+
+  const SKIP_MS = 10000; // how far the forward button jumps into the track
 
   const read = (key, fallback) => {
     try {
@@ -146,8 +149,13 @@
               <button class="hitster-primary" data-act="play">play track</button>
               <div class="hitster-controls">
                 <button class="hitster-mini" data-act="replay">restart</button>
-                <button class="hitster-mini" data-act="skip">skip</button>
+                <button class="hitster-mini" data-act="forward">+10s</button>
+                <button class="hitster-mini" data-act="skip">skip track</button>
               </div>
+              <label class="hitster-volume">
+                <span>volume</span>
+                <input type="range" min="0" max="100" step="1" data-el="volume" aria-label="Volume">
+              </label>
             </div>
           </div>
           <div class="hitster-bar"><i data-el="progress"></i></div>
@@ -252,7 +260,7 @@
       };
 
       const enableTransport = (on) => {
-        ['play', 'replay', 'skip', 'check', 'giveup'].forEach((name) => {
+        ['play', 'replay', 'forward', 'skip', 'check', 'giveup'].forEach((name) => {
           act(name).disabled = !on;
         });
       };
@@ -338,18 +346,46 @@
         clipDone = false;
         setProgress(0);
         try {
-          const response = await H.api(`/me/player/play?device_id=${playback.deviceId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uris: [current.uri], position_ms: startMs }),
-          });
-          if (!response.ok) throw new Error(`Spotify refused to play (${response.status})`);
+          await H.playTrack(playback.deviceId, current.uri, startMs);
           setStatus('');
           setPlayLabel('pause');
           startWatch();
         } catch (error) {
+          setSpinning(false);
+          setPlayLabel('play track');
           setStatus(`${error.message}. Press restart to try again.`, true);
         }
+      };
+
+      /**
+       * Jumps further into the track. The clip window restarts at the new
+       * spot, so the skip buys you a fresh listen rather than eating into the
+       * seconds you had left.
+       */
+      const skipForward = async () => {
+        if (!playback || !current) return;
+        try {
+          const state = await playback.player.getCurrentState();
+          const from = state ? state.position : startMs;
+          const duration = (state && state.duration) || current.durationMs || 0;
+          let target = from + SKIP_MS;
+          if (duration) target = Math.min(target, Math.max(0, duration - 2000));
+          await playback.player.seek(target);
+          startMs = target;
+          clipDone = false;
+          setProgress(0);
+          if (!state || state.paused) await playback.player.resume().catch(() => {});
+          setSpinning(true);
+          setPlayLabel('pause');
+          startWatch();
+        } catch (error) {
+          setStatus('Could not skip forward in this track.', true);
+        }
+      };
+
+      const setVolume = (percent) => {
+        cfg.volume = Math.max(0, Math.min(100, parseInt(percent, 10) || 0));
+        if (playback) playback.player.setVolume(cfg.volume / 100).catch(() => {});
       };
 
       const toggle = async () => {
@@ -558,6 +594,7 @@
       act('close').addEventListener('click', close);
       act('play').addEventListener('click', toggle);
       act('replay').addEventListener('click', play);
+      act('forward').addEventListener('click', skipForward);
       act('skip').addEventListener('click', () => nextRound()); // no score either way
       act('check').addEventListener('click', () => check(false));
       act('giveup').addEventListener('click', () => check(true));
@@ -569,6 +606,12 @@
         renderStats();
         q('round').textContent = String(stats.rounds + 1);
       });
+
+      const volume = q('volume');
+      volume.value = String(cfg.volume);
+      volume.addEventListener('input', () => setVolume(volume.value));
+      // Dragging fires a stream of input events; only persist once it settles.
+      volume.addEventListener('change', () => write(STORE.cfg, cfg));
 
       root.querySelectorAll('[data-cfg]').forEach((input) => {
         const key = input.dataset.cfg;
@@ -644,6 +687,7 @@
           fatal(`Could not start the Spotify player: ${error.message}`);
           return;
         }
+        playback.player.setVolume(cfg.volume / 100).catch(() => {});
         buildDeck();
         await nextRound();
       };
