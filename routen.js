@@ -5,13 +5,13 @@
  * Everything runs in the browser, the site has no backend. That shapes what is
  * possible per source:
  *
- *   Komoot       tours are read from the komoot API, or from the JSON that the
- *                tour page embeds. Komoot sends no CORS headers for foreign
- *                sites, so the direct request usually fails and the same URLs
- *                are retried through public CORS relays. share links carry a
- *                share_token that also unlocks private tours. If everything
- *                fails we fall back to komoot's own GPX export and the drop
- *                zone below.
+ *   Komoot       tours are read from the komoot API, which does answer
+ *                cross-origin requests (mind the Accept header, see fetchText).
+ *                If it refuses, the API and the tour page (which embeds the
+ *                tour as JSON) are retried through public CORS relays. share
+ *                links carry a share_token that also unlocks private tours. If
+ *                everything fails we fall back to komoot's own GPX export and
+ *                the drop zone below.
  *   Strava       has no public route endpoint, so the GPX comes from Strava's
  *                own export URL (works when the user is logged in there) and is
  *                then dropped into this tool to continue.
@@ -360,13 +360,18 @@
     }
   };
 
-  const FETCH_TIMEOUT_MS = 12000;
+  const FETCH_TIMEOUT_MS = 15000;
 
-  const fetchText = async (url, accept) => {
+  /**
+   * No Accept header on purpose: komoot's API answers 406 to a plain
+   * "application/json" because it only speaks application/hal+json, and the
+   * browser default of "* / *" satisfies both it and the relays.
+   */
+  const fetchText = async (url) => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
     try {
-      const res = await fetch(url, { mode: 'cors', headers: { Accept: accept }, signal: controller.signal });
+      const res = await fetch(url, { mode: 'cors', signal: controller.signal });
       const text = await res.text();
       if (!res.ok) {
         const err = new Error(`HTTP ${res.status}`);
@@ -384,15 +389,32 @@
   };
 
   /**
-   * Komoot does not allow other websites to read its API from the browser, so
-   * after the direct attempt the same URLs go through public CORS relays. The
-   * tour URL (including a share_token) is visible to whichever relay answers.
+   * Komoot's API does answer cross-origin requests, so the direct attempt is
+   * the normal path. Should it refuse (login wall, changed policy) the same
+   * URLs go through public CORS relays, all at once because each of them is
+   * slow or down now and then. The tour URL (including a share_token) is
+   * visible to whichever relay answers. corsproxy.io is not on the list: it
+   * wants an API key for foreign origins these days.
    */
   const CORS_RELAYS = [
-    { name: 'corsproxy.io', wrap: (u) => `https://corsproxy.io/?url=${encodeURIComponent(u)}` },
     { name: 'allorigins.win', wrap: (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}` },
     { name: 'codetabs.com', wrap: (u) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}` },
+    { name: 'cors.lol', wrap: (u) => `https://api.cors.lol/?url=${encodeURIComponent(u)}` },
   ];
+
+  /** Resolves with the first truthy result, or null once every promise settled. */
+  const firstTruthy = (promises) =>
+    new Promise((resolve) => {
+      let pending = promises.length;
+      if (!pending) resolve(null);
+      promises.forEach((p) =>
+        Promise.resolve(p).then((value) => {
+          if (value) resolve(value);
+        }).catch(() => {}).finally(() => {
+          pending -= 1;
+          if (pending === 0) resolve(null);
+        }));
+    });
 
   const loadKomoot = async (link, report) => {
     const token = link.shareToken ? `share_token=${encodeURIComponent(link.shareToken)}` : '';
@@ -408,7 +430,7 @@
 
     const attempt = async (label, url, kind) => {
       try {
-        const text = await fetchText(url, kind === 'json' ? 'application/json' : 'text/html');
+        const text = await fetchText(url);
         let json = null;
         if (kind === 'json') {
           try { json = JSON.parse(text); } catch (error) { json = parseKomootPage(text); }
@@ -435,15 +457,17 @@
       const route = await attempt(`direkt ${new URL(url).host}`, url, 'json');
       if (route) return route;
     }
-    for (const relay of CORS_RELAYS) {
-      report(`Komoot blockt den direkten Abruf, versuche es über ${relay.name}…`);
-      for (const url of apiUrls.slice(0, 1)) {
-        const route = await attempt(`${relay.name} → API`, relay.wrap(url), 'json');
-        if (route) { route.origin += ` (über ${relay.name})`; return route; }
-      }
-      const route = await attempt(`${relay.name} → Tourseite`, relay.wrap(pageUrl), 'html');
-      if (route) { route.origin += ` (über ${relay.name})`; return route; }
-    }
+    report('Komoot gibt die Tour nicht direkt heraus, versuche es über Umwege…');
+    const viaRelay = (relay, label, url, kind) =>
+      attempt(`${relay.name} → ${label}`, relay.wrap(url), kind).then((route) => {
+        if (route) route.origin += ` (über ${relay.name})`;
+        return route;
+      });
+    const relayed = await firstTruthy(CORS_RELAYS.flatMap((relay) => [
+      viaRelay(relay, 'API', apiUrls[0], 'json'),
+      viaRelay(relay, 'Tourseite', pageUrl, 'html'),
+    ]));
+    if (relayed) return relayed;
 
     const reason = sawNotFound
       ? 'Komoot kennt diese Tour-ID nicht.'
