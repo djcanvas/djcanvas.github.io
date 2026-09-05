@@ -5,10 +5,13 @@
  * Everything runs in the browser, the site has no backend. That shapes what is
  * possible per source:
  *
- *   Komoot       public tours are read straight from the komoot API. Private
- *                tours work with the share_token that a "share" link carries.
- *                When the browser blocks the request (CORS, login wall) we fall
- *                back to komoot's own GPX export and the drop zone below.
+ *   Komoot       tours are read from the komoot API, or from the JSON that the
+ *                tour page embeds. Komoot sends no CORS headers for foreign
+ *                sites, so the direct request usually fails and the same URLs
+ *                are retried through public CORS relays. share links carry a
+ *                share_token that also unlocks private tours. If everything
+ *                fails we fall back to komoot's own GPX export and the drop
+ *                zone below.
  *   Strava       has no public route endpoint, so the GPX comes from Strava's
  *                own export URL (works when the user is logged in there) and is
  *                then dropped into this tool to continue.
@@ -300,62 +303,156 @@
 
   // --- loading a route from a link -------------------------------------------
 
-  const komootPoints = (json) => {
-    const items =
-      (json && json._embedded && json._embedded.coordinates && json._embedded.coordinates.items) ||
-      (json && json.items) || [];
-    return items
+  /**
+   * Coordinates can sit at different depths depending on which endpoint (or
+   * which embedded page blob) answered, so look for the first array of
+   * {lat, lng} objects anywhere in the document, and remember the nearest
+   * enclosing object with a name: that is the tour itself.
+   */
+  const findCoordinates = (node, owner = null, depth = 0) => {
+    if (!node || typeof node !== 'object' || depth > 14) return null;
+    if (Array.isArray(node)) {
+      if (node.length >= 2 && node.every((c) => c && Number.isFinite(c.lat) && Number.isFinite(c.lng))) {
+        return { items: node, owner };
+      }
+      for (const item of node) {
+        const found = findCoordinates(item, owner, depth + 1);
+        if (found) return found;
+      }
+      return null;
+    }
+    const nextOwner = typeof node.name === 'string' ? node : owner;
+    for (const key of Object.keys(node)) {
+      const found = findCoordinates(node[key], nextOwner, depth + 1);
+      if (found) return found;
+    }
+    return null;
+  };
+
+  const komootRoute = (json, link) => {
+    const found = findCoordinates(json);
+    if (!found) return null;
+    const points = found.items
       .map((c) => ({ lat: c.lat, lng: c.lng, ele: c.alt }))
       .filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng));
+    if (points.length < 2) return null;
+    const tour = found.owner || {};
+    return {
+      name: tour.name || `Komoot Tour ${link.id}`,
+      kind: 'track',
+      points,
+      mode: KOMOOT_SPORT_MODE[tour.sport] || 'bicycling',
+      origin: `Komoot Tour ${link.id}`,
+    };
   };
 
-  const fetchJson = async (url) => {
-    const res = await fetch(url, { mode: 'cors', headers: { Accept: 'application/json' } });
-    if (!res.ok) {
-      const err = new Error(`HTTP ${res.status}`);
-      err.status = res.status;
-      throw err;
+  /**
+   * Komoot's tour page embeds the tour as JSON in a kmtBoot.setProps("...")
+   * call. It is a JS string literal holding JSON, so it is decoded twice.
+   */
+  const parseKomootPage = (html) => {
+    const m = /kmtBoot\.setProps\(("(?:[^"\\]|\\.)*")\)/.exec(html);
+    if (!m) return null;
+    try {
+      return JSON.parse(JSON.parse(m[1]));
+    } catch (error) {
+      return null;
     }
-    return res.json();
   };
 
-  const loadKomoot = async (link) => {
-    const token = link.shareToken ? `&share_token=${encodeURIComponent(link.shareToken)}` : '';
-    const attempts = [
-      `${KOMOOT_API}${link.id}?_embedded=coordinates${token}`,
-      `${KOMOOT_WWW_API}${link.id}?_embedded=coordinates${token}`,
-      `${KOMOOT_API}${link.id}/coordinates?${token.slice(1)}`,
-    ];
-    let lastError = null;
-    let meta = null;
-    for (const url of attempts) {
-      try {
-        const json = await fetchJson(url);
-        const points = komootPoints(json);
-        if (json && json.name) meta = json;
-        if (points.length >= 2) {
-          const sport = (meta && meta.sport) || (json && json.sport) || '';
-          return {
-            name: (meta && meta.name) || (json && json.name) || `Komoot Tour ${link.id}`,
-            kind: 'track',
-            points,
-            mode: KOMOOT_SPORT_MODE[sport] || 'bicycling',
-            origin: `Komoot Tour ${link.id}`,
-          };
-        }
-      } catch (error) {
-        lastError = error;
+  const FETCH_TIMEOUT_MS = 12000;
+
+  const fetchText = async (url, accept) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+    try {
+      const res = await fetch(url, { mode: 'cors', headers: { Accept: accept }, signal: controller.signal });
+      const text = await res.text();
+      if (!res.ok) {
+        const err = new Error(`HTTP ${res.status}`);
+        err.status = res.status;
+        throw err;
       }
+      return text;
+    } catch (error) {
+      if (error.name === 'AbortError') throw new Error('Zeitüberschreitung');
+      if (error instanceof TypeError) throw new Error('vom Browser blockiert (CORS) oder nicht erreichbar');
+      throw error;
+    } finally {
+      clearTimeout(timer);
     }
-    const status = lastError && lastError.status;
-    const reason =
-      status === 403 || status === 401
-        ? 'Die Tour ist privat. Nimm den Teilen-Link aus der Komoot-App (der enthält ein share_token) oder exportiere sie unten selbst.'
-        : status === 404
-          ? 'Komoot kennt diese Tour-ID nicht.'
-          : 'Der Browser konnte die Tour nicht direkt von Komoot laden (Login-Pflicht oder CORS).';
+  };
+
+  /**
+   * Komoot does not allow other websites to read its API from the browser, so
+   * after the direct attempt the same URLs go through public CORS relays. The
+   * tour URL (including a share_token) is visible to whichever relay answers.
+   */
+  const CORS_RELAYS = [
+    { name: 'corsproxy.io', wrap: (u) => `https://corsproxy.io/?url=${encodeURIComponent(u)}` },
+    { name: 'allorigins.win', wrap: (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}` },
+    { name: 'codetabs.com', wrap: (u) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}` },
+  ];
+
+  const loadKomoot = async (link, report) => {
+    const token = link.shareToken ? `share_token=${encodeURIComponent(link.shareToken)}` : '';
+    const apiUrls = [
+      `${KOMOOT_API}${link.id}?_embedded=coordinates${token ? `&${token}` : ''}`,
+      `${KOMOOT_WWW_API}${link.id}?_embedded=coordinates${token ? `&${token}` : ''}`,
+      `${KOMOOT_API}${link.id}/coordinates${token ? `?${token}` : ''}`,
+    ];
+    const pageUrl = `https://www.komoot.com/tour/${link.id}${token ? `?${token}` : ''}`;
+    const log = [];
+    let sawForbidden = false;
+    let sawNotFound = false;
+
+    const attempt = async (label, url, kind) => {
+      try {
+        const text = await fetchText(url, kind === 'json' ? 'application/json' : 'text/html');
+        let json = null;
+        if (kind === 'json') {
+          try { json = JSON.parse(text); } catch (error) { json = parseKomootPage(text); }
+        } else {
+          json = parseKomootPage(text);
+          if (!json) { try { json = JSON.parse(text); } catch (error) { json = null; } }
+        }
+        const route = json && komootRoute(json, link);
+        if (route) {
+          log.push(`${label}: ok`);
+          return route;
+        }
+        log.push(`${label}: Antwort ohne Koordinaten`);
+      } catch (error) {
+        if (error.status === 401 || error.status === 403) sawForbidden = true;
+        if (error.status === 404) sawNotFound = true;
+        log.push(`${label}: ${error.message}`);
+      }
+      return null;
+    };
+
+    report(`Lade Komoot-Tour ${link.id}…`);
+    for (const url of apiUrls) {
+      const route = await attempt(`direkt ${new URL(url).host}`, url, 'json');
+      if (route) return route;
+    }
+    for (const relay of CORS_RELAYS) {
+      report(`Komoot blockt den direkten Abruf, versuche es über ${relay.name}…`);
+      for (const url of apiUrls.slice(0, 1)) {
+        const route = await attempt(`${relay.name} → API`, relay.wrap(url), 'json');
+        if (route) { route.origin += ` (über ${relay.name})`; return route; }
+      }
+      const route = await attempt(`${relay.name} → Tourseite`, relay.wrap(pageUrl), 'html');
+      if (route) { route.origin += ` (über ${relay.name})`; return route; }
+    }
+
+    const reason = sawNotFound
+      ? 'Komoot kennt diese Tour-ID nicht.'
+      : sawForbidden && !link.shareToken
+        ? 'Komoot gibt die Tour ohne Login nicht heraus. Nimm den Teilen-Link aus der Komoot-App (der enthält ein share_token) oder exportiere sie unten selbst.'
+        : 'Die Tour ließ sich weder direkt noch über einen Umweg laden. Details unten; der Export bei Komoot selbst geht immer.';
     const err = new Error(reason);
     err.fallback = 'komoot';
+    err.log = log;
     throw err;
   };
 
@@ -520,7 +617,7 @@
         return b;
       };
 
-      const showFallback = (link, message) => {
+      const showFallback = (link, message, log) => {
         card.hidden = false;
         card.innerHTML = '';
         card.appendChild(el('h2', null, link.source === 'strava' ? 'Strava' : link.source === 'komoot' ? 'Komoot' : 'Google Maps'));
@@ -547,6 +644,12 @@
         }
         card.appendChild(steps);
         card.appendChild(actions);
+        if (log && log.length) {
+          const details = el('details', 'routen-log');
+          details.appendChild(el('summary', null, 'Was wurde versucht?'));
+          details.appendChild(el('pre', null, log.join('\n')));
+          card.appendChild(details);
+        }
       };
 
       // --- the loaded route and its targets ----------------------------------
@@ -664,8 +767,7 @@
         setBusy(true);
         try {
           if (link.source === 'komoot') {
-            say(`Lade Komoot-Tour ${link.id}…`);
-            route = await loadKomoot(link);
+            route = await loadKomoot(link, say);
           } else {
             say('Lese Wegpunkte aus dem Google-Maps-Link…');
             route = await loadGoogle(link, say);
@@ -674,7 +776,7 @@
           showRoute();
         } catch (error) {
           say(error.message, 'error');
-          if (error.fallback === 'komoot') showFallback(link, '');
+          if (error.fallback === 'komoot') showFallback(link, '', error.log);
         } finally {
           setBusy(false);
         }
