@@ -209,3 +209,19 @@
   gap: 8px;
   flex-wrap: wrap;
 }
+
+.routen-log {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.routen-log summary {
+  cursor: pointer;
+}
+
+.routen-log pre {
+  margin-top: 6px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: monospace;
+}
