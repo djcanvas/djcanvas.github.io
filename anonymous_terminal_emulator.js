@@ -7,7 +7,7 @@
     }
 
     const COMMANDS = {
-      HELP: 'Available commands: help, about, aboutme, clear, insta, spotify, dino, user, hitster',
+      HELP: 'Available commands: help, about, aboutme, clear, insta, spotify, dino, user, hitster, routen',
       ABOUT: 'Just a project trying different things',
       ABOUTME: 'Chemistry student livin in Germany',
       CLEAR: '',
@@ -16,6 +16,7 @@
       SPOTIFY: 'Redricting to Spotify...',
       USER: 'Usage: user <username>',
       HITSTER: 'Opening hitster... ("hitster practice" drills the deck solo)',
+      ROUTEN: 'Opening routen... (komoot / strava / google maps route -> gpx or another platform)',
     };
     // SHA-256 hashes of passwords (not plaintext). Note: this still isn't
     // real security — anyone can view-source, brute-force the hash offline,
@@ -178,6 +179,16 @@
           case 'hitster':
             startHitster(commandLine.slice(1));
             return; // The game owns the prompt from here on
+          case 'routen':
+            if (!window.Routen) {
+              displayMessage('routen failed to load.', true);
+            } else {
+              displayMessage(COMMANDS.ROUTEN);
+              // A pasted link may come with spaces around it; hand over the rest of the line.
+              window.Routen.open(commandLine.slice(1).join(' ').trim());
+            }
+            createPrompt(false);
+            return;
           case 'user':
             if (commandLine.length === 2) {
               newUsername = commandLine[1];
@@ -337,7 +348,7 @@
     const focusTerminalInput = (event) => {
       // While the hitster overlay is up it owns the keyboard; pulling focus
       // back here would make its own inputs impossible to type into.
-      if (document.querySelector('.hitster-root')) {
+      if (document.querySelector('.hitster-root') || document.querySelector('.routen-root')) {
         return;
       }
       const terminalInput = terminal.querySelector('.prompt input[type="text"]:not([readOnly])');
